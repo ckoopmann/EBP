@@ -49,3 +49,10 @@ soep <- soep[as.numeric(pglfs) == 16,]
 setorderv(soep, cols = "syear", order = -1)
 #Extract first appearance of each pid
 soep <- soep[!duplicated(pid),]
+
+#Remove NAs indicated by negative Values
+for(varName in names(soep)){
+      soep <- soep[as.numeric(get(varName)) >= 0,]
+      print(varName)
+      print(nrow(soep))
+}
