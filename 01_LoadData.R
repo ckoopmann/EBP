@@ -3,13 +3,13 @@ library(readstata13)
 library(data.table)
 
 
-pgen <- read.dta("/Users/Christian/Statistik_Studium/EconProject/Daten/SOEP/Dateien_(5)_von_SOEP_Hotline_--_Michaela_Engelmann_--__SOEPlong-doku-v31L.xlsx_docu_v31_1.zip_SOE.../SOEP-LONG_v31_stata_de+en/pgen.dta")
+pgen <- read.dta13("C:/Users/Tammena/Uni/Master Stat/econ project/SOEP-LONG_v31_stata_de+en/pgen.dta")
 pgen <- as.data.table(pgen)
 setkeyv(pgen,c("pid","syear"))
 
 
 
-ppfadl <- read.dta("/Users/Christian/Statistik_Studium/EconProject/Daten/SOEP/Dateien_(5)_von_SOEP_Hotline_--_Michaela_Engelmann_--__SOEPlong-doku-v31L.xlsx_docu_v31_1.zip_SOE.../SOEP-LONG_v31_stata_de+en/ppfadl.dta")
+ppfadl <- read.dta13("C:/Users/Tammena/Uni/Master Stat/econ project/SOEP-LONG_v31_stata_de+en/ppfadl.dta")
 ppfadl <- as.data.table(ppfadl)
 setkeyv(ppfadl,c("pid", "syear"))
 
@@ -21,17 +21,17 @@ library(readstata13)
 library(data.table)
 
 
-pgen <- read.dta("/Users/Christian/Statistik_Studium/EconProject/Daten/SOEP/Dateien_(5)_von_SOEP_Hotline_--_Michaela_Engelmann_--__SOEPlong-doku-v31L.xlsx_docu_v31_1.zip_SOE.../SOEP-LONG_v31_stata_de+en/pgen.dta")
+pgen <- read.dta13("C:/Users/Tammena/Uni/Master Stat/econ project/SOEP-LONG_v31_stata_de+en/pgen.dta")
 pgen <- as.data.table(pgen)
 setkeyv(pgen,c("pid","syear"))
 
 
 
-ppfadl <- read.dta("/Users/Christian/Statistik_Studium/EconProject/Daten/SOEP/Dateien_(5)_von_SOEP_Hotline_--_Michaela_Engelmann_--__SOEPlong-doku-v31L.xlsx_docu_v31_1.zip_SOE.../SOEP-LONG_v31_stata_de+en/ppfadl.dta")
+ppfadl <- read.dta13("C:/Users/Tammena/Uni/Master Stat/econ project/SOEP-LONG_v31_stata_de+en/ppfadl.dta")
 ppfadl <- as.data.table(ppfadl)
 setkeyv(ppfadl,c("pid", "syear"))
 
-pequiv <- read.dta("/Users/Christian/Statistik_Studium/EconProject/Daten/SOEP/Dateien_(5)_von_SOEP_Hotline_--_Michaela_Engelmann_--__SOEPlong-doku-v31L.xlsx_docu_v31_1.zip_SOE.../SOEP-LONG_v31_stata_de+en/pequiv.dta")
+pequiv <- read.dta13("C:/Users/Tammena/Uni/Master Stat/econ project/SOEP-LONG_v31_stata_de+en/pequiv.dta")
 pequiv <- as.data.table(pequiv)
 setkeyv(pequiv,c("pid", "syear"))
 
@@ -39,7 +39,7 @@ soep <- merge(pgen, ppfadl)
 soep <- merge(soep, pequiv)
 
 #Choose variables of interest
-soep <- soep[,.(pid, syear, pglfs, d11104,pgexpft,pgexppt,d11109,sex,l11102,pgerwzt)]
+soep <- soep[,.(pid, syear, e11107, pglfs,pglabgro, d11104,pgexpft,pgexppt,d11109,sex,l11102,pgerwzt)]
 
 #Drop non-working
 soep <- soep[as.numeric(pglfs) == 16,]
@@ -56,3 +56,5 @@ for(varName in names(soep)){
       print(varName)
       print(nrow(soep))
 }
+
+save(soep,file="soep.Rda")
