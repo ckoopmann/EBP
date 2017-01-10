@@ -61,11 +61,11 @@ summary(soep$p1)
 ids <- sample(soep$id, n,  replace = FALSE, prob = soep$edu)
 sample <- soep[soep$id %in% ids, ]
 
-#wie richtig 
-weights <- 1-(1/(sample$edu/max(sample$edu))) + 0.01
+#wie richtig weights berechnen??
+sample$weights <- 1/(sample$edu/max(sample$edu))
 
 #Berechnung des gewichteten Gini
-directgini <- as.data.frame(tapply(sample$income, sample$sma, function(x){gini(x, weights=weights)}))
+directgini <- as.data.frame(tapply(sample$income, sample$sma, function(x){gini(x, weights=sample$weights)}))
 directgini <- setDT(directgini, keep.rownames = TRUE)[]
 names(directgini) <- c("Domain", "Gini")
 
@@ -85,6 +85,7 @@ ebpgini <- estimators(object = ebp_est, MSE = F, CV = F, indicator = c("Gini"))
 
 #Berechnung des Ginis mittels EBP + sample selection
 sample$weight <- weights
+#was machen wir mit den weights auf der sme ebene?
 census$weight <- 0
 ebp_estw <- ebp(income ~ expPT + expFT + weight  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = TRUE)
 ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
