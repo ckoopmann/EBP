@@ -59,19 +59,20 @@ census <- soep[soep$id %in% ids, ]
 #die Wahrscheinlichkeit ist abhängig von education
 #Fehlerterm bei der Ziehungswahrscheinlichkeit
 e <- rnorm(N,0,1)
-soep$p <-  soep$edu+e
+soep$p <-  soep$edu
+#+e
 #Normierung auf 0 bis 1
 soep$p1 <-  soep$p/max(soep$p)
 summary(soep$p1)
 
-ids <- sample(soep$id, n,  replace = FALSE, prob = soep$edu)
+ids <- sample(soep$id, n,  replace = FALSE, prob = soep$p1)
 sample <- soep[soep$id %in% ids, ]
 
 #wie richtig weights berechnen??
-sample$weights <- 1/(sample$edu/max(sample$edu))
+sample$weights <- 1/sample$p1
 
 #Berechnung des gewichteten Gini
-directgini <- as.data.frame(tapply(sample$income, sample$sma, function(x){gini(x, weights=sample$weights)}))
+directgini <- sample[,.(DirectGini = gini(income, weights =weights)), by = sma]
 directgini <- setDT(directgini, keep.rownames = TRUE)[]
 names(directgini) <- c("Domain", "Gini")
 
@@ -92,10 +93,9 @@ ebpgini <- estimators(object = ebp_est, MSE = F, CV = F, indicator = c("Gini"))
 #Berechnung des Ginis mittels EBP + sample selection
 #sample$weight <- weights
 #was machen wir mit den weights auf der sme ebene?
-census$weight <- 0
-#ebp_estw <- ebp(income ~ expPT + expFT + weight  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = TRUE)
-ebpginiw <-ebpgini
-#ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
+census$weights <- 1/(nrow(census))
+ebp_estw <- ebp(income ~ expPT + expFT + weights  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = TRUE)
+ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
 
 #Zusammenführen der Ergebnisse in eine Tabelle
 df <- merge(popgini, directgini, by="Domain")
