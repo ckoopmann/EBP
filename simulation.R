@@ -20,9 +20,6 @@ c <- 4000
 evaluation <- NULL
 
 
-#Beginn der Simulation mit s Durchläufen
-for(i in 1:s) {
-#Soep Daten als Population aus Load_Data.R
 load("soep.Rda")
 soep$pglfs <- NULL
 soep$female <- ifelse(as.numeric(soep$sex)==8, 1,0)
@@ -31,7 +28,7 @@ soep$sex <- NULL
 soep$d11104 <- NULL
 soep$pid <- NULL
 soep$syear <- NULL
- 
+
 N <- nrow(soep)
 soep$id <- 1:N
 names(soep) <- c("branche", "income", "expPT", "expFT", "edu", "east", "seniority", "female", "married", "id")
@@ -40,6 +37,15 @@ soep$east <- as.numeric(soep$east)-7
 #SMA Branche#Geschlecht
 soep$sma <- soep$branche
 soep <- droplevels(soep)
+
+save(soep,file="soep.Rda")
+
+
+#Beginn der Simulation mit s Durchläufen
+for(i in 1:s) {
+#Soep Daten als Population aus Load_Data.R
+load("soep.Rda")
+      
 
 #Populationsdaten für das  two-level model
 #pop <- summaryBy(branche + income + expPT + expFT + edu + east + seniority + female + married ~ sma, data=soep, FUN=mean)
