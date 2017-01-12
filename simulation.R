@@ -13,33 +13,15 @@ set.seed(2)
 #No. of simulations
 s <- 20
 #Größe der informativen Stichprobe
-n <- 1000
+n <- 15000
 #Größe des "Zensus" für die Daten auf Small Area-Ebene
-c <- 4000
+c <- 3000
 #Auswertungsvektor
 evaluation <- NULL
 
 
 load("soep.Rda")
-soep <- na.omit(soep)
-soep$pglfs <- NULL
-soep$female <- ifelse(as.numeric(soep$sex)==8, 1,0)
-soep$married <- ifelse(as.numeric(soep$d11104)==7, 1,0)
-soep$sex <- NULL
-soep$d11104 <- NULL
-soep$pid <- NULL
-soep$syear <- NULL
 
-N <- nrow(soep)
-soep$id <- 1:N
-names(soep) <- c("branche", "income", "expPT", "expFT", "edu", "east", "seniority", "female", "married", "id")
-soep$east <- as.numeric(soep$east)-7
-
-#SMA Branche#Geschlecht
-soep$sma <- soep$branche
-soep <- droplevels(soep)
-
-save(soep,file="soep.Rda")
 
 
 #Beginn der Simulation mit s Durchläufen
@@ -60,7 +42,7 @@ census <- soep[soep$id %in% ids, ]
 #die Wahrscheinlichkeit ist abhängig von education
 #Fehlerterm bei der Ziehungswahrscheinlichkeit
 e <- rnorm(N,0,1)
-soep$p <-  soep$edu
+soep$p <-  soep$income
 #+e
 #Normierung auf 0 bis 1
 soep$p1 <-  soep$p/max(soep$p)
@@ -88,14 +70,15 @@ popgini <- setDT(popgini, keep.rownames = TRUE)[]
 names(popgini) <- c("Domain", "Gini")
 
 #Berechnung des Ginis mittels EBP
-ebp_est <- ebp(income ~ expPT + expFT  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = TRUE)
+ebp_est <- ebp(income ~ expPT + expFT  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = T)
 ebpgini <- estimators(object = ebp_est, MSE = F, CV = F, indicator = c("Gini"))
 
 #Berechnung des Ginis mittels EBP + sample selection
 #sample$weight <- weights
 #was machen wir mit den weights auf der sme ebene?
 census$weights <- 1/(nrow(census))
-ebp_estw <- ebp(income ~ expPT + expFT + weights  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = TRUE)
+ebp_estw <- ebp_est
+      #ebp(income ~ expPT + expFT + weights  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = TRUE)
 ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
 
 #Zusammenführen der Ergebnisse in eine Tabelle
@@ -133,3 +116,5 @@ s <- s+1
 
 #Auswertung
 summary(evaluation)
+
+

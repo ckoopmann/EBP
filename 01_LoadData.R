@@ -57,4 +57,22 @@ for(varName in names(soep)){
       print(nrow(soep))
 }
 
+soep <- na.omit(soep)
+soep$pglfs <- NULL
+soep$female <- ifelse(as.numeric(soep$sex)==8, 1,0)
+soep$married <- ifelse(as.numeric(soep$d11104)==7, 1,0)
+soep$sex <- NULL
+soep$d11104 <- NULL
+soep$pid <- NULL
+soep$syear <- NULL
+
+N <- nrow(soep)
+soep$id <- 1:N
+names(soep) <- c("branche", "income", "expPT", "expFT", "edu", "east", "seniority", "female", "married", "id")
+soep$east <- as.numeric(soep$east)-7
+
+#SMA Branche#Geschlecht
+soep$sma <- as.factor(paste(as.character(soep$branche), as.character(soep$female), sep = " - "))
+soep <- droplevels(soep)
+
 save(soep,file="soep.Rda")
