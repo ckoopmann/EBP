@@ -84,11 +84,12 @@ ebp_est <- ebp(income ~ expPT + expFT  + east + seniority + female + married, ce
 ebpgini <- estimators(object = ebp_est, MSE = F, CV = F, indicator = c("Gini"))
 
 #Berechnung des Ginis mittels EBP + sample selection
-sample$weight <- weights
+#sample$weight <- weights
 #was machen wir mit den weights auf der sme ebene?
 census$weight <- 0
-ebp_estw <- ebp(income ~ expPT + expFT + weight  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = TRUE)
-ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
+#ebp_estw <- ebp(income ~ expPT + expFT + weight  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = TRUE)
+ebpginiw <-ebpgini
+#ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
 
 #Zusammenführen der Ergebnisse in eine Tabelle
 df <- merge(popgini, directgini, by="Domain")
