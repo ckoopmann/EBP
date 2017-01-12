@@ -21,6 +21,7 @@ evaluation <- NULL
 
 
 load("soep.Rda")
+soep <- na.omit(soep)
 soep$pglfs <- NULL
 soep$female <- ifelse(as.numeric(soep$sex)==8, 1,0)
 soep$married <- ifelse(as.numeric(soep$d11104)==7, 1,0)
