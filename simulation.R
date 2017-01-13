@@ -41,7 +41,7 @@ census <- soep[soep$id %in% ids, ]
 #Informative Stichprobe
 #die Wahrscheinlichkeit ist abhängig von education
 #Fehlerterm bei der Ziehungswahrscheinlichkeit
-e <- rnorm(N,0,1)
+#e <- rnorm(N,0,1)
 soep$p <-  soep$income
 #+e
 #Normierung auf 0 bis 1
@@ -70,7 +70,8 @@ popgini <- setDT(popgini, keep.rownames = TRUE)[]
 names(popgini) <- c("Domain", "Gini")
 
 #Berechnung des Ginis mittels EBP
-ebp_est <- ebp(income ~ expPT + expFT  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = T)
+ebp_est <- ebp(fixed = income ~ expPT + expFT  + east + seniority + female + married,
+               pop_data = census, pop_domains = "sma", smp_data = sample, smp_domains = "sma", L= 50,transformation = "no", MSE = F,  B = 50,na.rm = T)
 ebpgini <- estimators(object = ebp_est, MSE = F, CV = F, indicator = c("Gini"))
 
 #Berechnung des Ginis mittels EBP + sample selection
@@ -116,5 +117,6 @@ s <- s+1
 
 #Auswertung
 summary(evaluation)
+
 
 
