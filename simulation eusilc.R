@@ -19,11 +19,14 @@ c <- 3000
 #Auswertungsvektor
 evaluation <- NULL
 
+eusilcA_pop
+
+N <- nrow(eusilcA_pop)
+
 #Beginn der Simulation mit s Durchläufen
 for(i in 1:s) {
 #eusilcA_pop Daten als Population aus Load_Data.R
-eusilcA_pop
-  
+eusilcA_pop$id <- 1:N
 #Populationsdaten für das  two-level model
 #pop <- summaryBy(branche + income + expPT + expFT + edu + east + seniority + female + married ~ sma, data=eusilcA_pop, FUN=mean)
 #names(pop) <- c("sma", "branche", "income", "expPT", "expFT", "edu", "east", "seniority", "female", "married")
