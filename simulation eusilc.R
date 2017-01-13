@@ -29,9 +29,9 @@ eusilcA_pop
 #names(pop) <- c("sma", "branche", "income", "expPT", "expFT", "edu", "east", "seniority", "female", "married")
 eusilcA_pop$sma <- eusilcA_pop$district
 #Census Daten für EBP
-ids <- sample(eusilcA_pop$id, c,  replace = FALSE )
+# ids <- sample(eusilcA_pop$id, c,  replace = FALSE )
 #census <- eusilcA_pop[eusilcA_pop$id %in% ids, ]
-census <- eusilcA_pop
+# census <- eusilcA_pop
 #Informative Stichprobe
 #die Wahrscheinlichkeit ist abhängig von education
 #Fehlerterm bei der Ziehungswahrscheinlichkeit
@@ -39,7 +39,7 @@ census <- eusilcA_pop
 eusilcA_pop$p <-  scale(eusilcA_pop$cash)+1
 
 #+e
-
+eusilcA_pop$id <- seq(1:nrow(eusilcA_pop))
 ids <- sample(eusilcA_pop$id, n,  replace = FALSE, prob = eusilcA_pop$p)
 sample <- as.data.table(eusilcA_pop[eusilcA_pop$id %in% ids, ])
 
@@ -62,13 +62,16 @@ popgini <- setDT(popgini, keep.rownames = TRUE)[]
 names(popgini) <- c("Domain", "Gini")
 
 #Berechnung des Ginis mittels EBP
-ebp_est <- ebp(eqIncome ~ gender + eqsize + rent +  self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben +   fam_allow + house_allow + cap_inv + tax_adj, eusilcA_pop, "sma", sample, "sma", L=50)
+ebp_est <- ebp(eqIncome ~ gender + eqsize + rent +  self_empl + unempl_ben + 
+                  age_ben + surv_ben + sick_ben + dis_ben +   fam_allow + 
+                     house_allow + cap_inv + tax_adj, eusilcA_pop, "sma", sample, "sma", L=50)
+
 ebpgini <- estimators(object = ebp_est, MSE = F, CV = F, indicator = c("Gini"))
 
 #Berechnung des Ginis mittels EBP + sample selection
 #sample$weight <- weights
 #was machen wir mit den weights auf der sme ebene?
-census$weights <- 1/(nrow(census))
+#census$weights <- 1/(nrow(census))
 ebp_estw <- ebp_est
       #ebp(income ~ expPT + expFT + weights  + east + seniority + female + married, census, "sma", sample, "sma", L= 50, MSE = F,  B = 50,na.rm = TRUE)
 ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
