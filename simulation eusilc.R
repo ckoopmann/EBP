@@ -20,6 +20,14 @@ for(i in 1:10){
 relative_frequency[i] <-sum(eusilcA_pop$cash_group==i)/length(eusilcA_pop$cash_group)
 }
 relative_frequency
+
+eusilcA_pop$eqIncome_group <- cut(eusilcA_pop$eqIncome,10)
+levels(eusilcA_pop$eqIncome_group) <- c(1:10)
+relative_frequency_eqincome <- rep(NA,10)
+for(i in 1:10){
+      relative_frequency_eqincome[i] <-sum(eusilcA_pop$eqIncome_group==i)/length(eusilcA_pop$eqIncome_group)
+}
+relative_frequency_eqincome
 #No. of simulations
 s <- 1
 #Größe der informativen Stichprobe
