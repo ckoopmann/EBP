@@ -10,6 +10,24 @@ if(!require("reldist")) install.packages("reldist"); library("reldist")
 if(!require("sampleSelection")) install.packages("sampleSelection"); library("sampleSelection")
 set.seed(2)
 
+######################
+##sampling weigths####
+######################
+eusilcA_pop$cash_group <- cut(eusilcA_pop$cash,10)
+levels(eusilcA_pop$cash_group) <- c(1:10)
+relative_frequency <- rep(NA,10)
+for(i in 1:10){
+relative_frequency[i] <-sum(eusilcA_pop$cash_group==i)/length(eusilcA_pop$cash_group)
+}
+relative_frequency
+
+eusilcA_pop$eqIncome_group <- cut(eusilcA_pop$eqIncome,10)
+levels(eusilcA_pop$eqIncome_group) <- c(1:10)
+relative_frequency_eqincome <- rep(NA,10)
+for(i in 1:10){
+      relative_frequency_eqincome[i] <-sum(eusilcA_pop$eqIncome_group==i)/length(eusilcA_pop$eqIncome_group)
+}
+relative_frequency_eqincome
 #No. of simulations
 s <- 1
 #Größe der informativen Stichprobe
@@ -39,6 +57,10 @@ eusilcA_pop$sma <- eusilcA_pop$district
 #die Wahrscheinlichkeit ist abhängig von education
 #Fehlerterm bei der Ziehungswahrscheinlichkeit
 #e <- rnorm(N,0,1)
+
+
+
+
 eusilcA_pop$p <-  scale(eusilcA_pop$cash)+1
 
 #+e
