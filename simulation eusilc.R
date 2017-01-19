@@ -8,39 +8,79 @@ if(!require("tidyr")) install.packages("tidyr"); library("tidyr")
 if(!require("data.table")) install.packages("data.table"); library("data.table")
 if(!require("reldist")) install.packages("reldist"); library("reldist")
 if(!require("sampleSelection")) install.packages("sampleSelection"); library("sampleSelection")
+if(!require("dplyr")) install.packages("dplyr"); library("dplyr")
 set.seed(2)
 
 ######################
 ##sampling weigths####
 ######################
-groups <- 3
-eusilcA_pop$cash_group <- cut(eusilcA_pop$cash,groups)
-levels(eusilcA_pop$cash_group) <- c(1:groups)
+cutoff <- 45000
+groups <- 10
+hist(eusilcA_pop$cash)
+eusilcA_pop_temp <- eusilcA_pop %>% arrange(cash) %>% filter(cash <= cutoff) # Datensatz temporär teilen
+eusilcA_pop_temp_rich <- eusilcA_pop %>% arrange(cash) %>% filter(cash > cutoff)
+
+eusilcA_pop_temp$cash_group <- cut(eusilcA_pop_temp$cash,groups) # cuten nach Anzahl der Grupppen
+levels(eusilcA_pop_temp$cash_group) <- c(1:groups)
+
+eusilcA_pop_temp_rich$cash_group <- groups 
+eusilcA_pop_temp_rich$cash_group <- factor(eusilcA_pop_temp_rich$cash_group)
+
+eusilcA_pop_split <- rbind(eusilcA_pop_temp,eusilcA_pop_temp_rich) # wieder zusammenfügen der Datensätze
+
+summary(eusilcA_pop_split$cash_group)
+
 relative_frequency <- rep(NA,groups)
 for(i in 1:groups){
-relative_frequency[i] <-sum(eusilcA_pop$cash_group==i)/length(eusilcA_pop$cash_group)
+      relative_frequency[i] <-sum(eusilcA_pop_split$cash_group==i)/length(eusilcA_pop_split$cash_group)
 }
 relative_frequency
 
-absolute_frequency <- rep(NA,groups)
-for(i in 1:groups){
-     absolute_frequency[i] <-sum(eusilcA_pop$cash_group==i)
+eusilcA_pop_split$sample_prop <- rep(0.1,nrow(eusilcA_pop_split)) # sample prop zuweisen
+eusilcA_pop_split$pop_prop <- rep(NA,nrow(eusilcA_pop_split)) # pop prop zuweisen
+for(i in 1:nrow(eusilcA_pop_split)){
+      temp_help <- eusilcA_pop_split$cash_group[i]
+      eusilcA_pop_split$pop_prop[i] <- relative_frequency[temp_help]
 }
-absolute_frequency
 
-eusilcA_pop$eqIncome_group <- cut(eusilcA_pop$eqIncome,groups)
-levels(eusilcA_pop$eqIncome_group) <- c(1:groups)
-relative_frequency_eqincome <- rep(NA,groups)
-for(i in 1:groups){
-      relative_frequency_eqincome[i] <-sum(eusilcA_pop$eqIncome_group==i)/length(eusilcA_pop$eqIncome_group)
-}
-relative_frequency_eqincome
+eusilcA_pop_split <- eusilcA_pop_split[sample(nrow(eusilcA_pop_split),replace = F),] # reshuffle Daten da noch geordnet von Grupppenaufteilung
+eusilcA_pop_split$sample_weigth <- eusilcA_pop_split$pop_prop/eusilcA_pop_split$sample_prop # neue Variable sample weigths erzeugt
+summary(eusilcA_pop_split$sample_weigth)
+      
+# eusilcA_pop$cash_group <- cut(eusilcA_pop$cash[eusilcA_pop$cash <= cutoff],groups)
+# levels(eusilcA_pop$cash_group) <- c(1:groups)
+# relative_frequency <- rep(NA,groups)
+# for(i in 1:groups){
+# relative_frequency[i] <-sum(eusilcA_pop_split$cash_group==i)/length(eusilcA_pop_split$cash_group)
+# }
+# relative_frequency
+# 
+# absolute_frequency <- rep(NA,groups)
+# for(i in 1:groups){
+#      absolute_frequency[i] <-sum(eusilcA_pop$cash_group==i)
+# }
+# absolute_frequency
+# 
+# 
+# 
+# eusilcA_pop$eqIncome_group <- cut(eusilcA_pop$eqIncome,groups)
+# levels(eusilcA_pop$eqIncome_group) <- c(1:groups)
+# relative_frequency_eqincome <- rep(NA,groups)
+# for(i in 1:groups){
+#       relative_frequency_eqincome[i] <-sum(eusilcA_pop$eqIncome_group==i)/length(eusilcA_pop$eqIncome_group)
+# }
+# relative_frequency_eqincome
+# 
+# absolute_frequency_eqincome <- rep(NA,groups)
+# for(i in 1:groups){
+#       absolute_frequency_eqincome[i] <-sum(eusilcA_pop$eqIncome_group==i)
+# }
+# absolute_frequency_eqincome
+# 
+# 
+# hist(eusilcA_pop$eqIncome)
+# sum(eusilcA_pop$eqIncome<30000)/length(eusilcA_pop$eqIncome)
 
-absolute_frequency_eqincome <- rep(NA,groups)
-for(i in 1:groups){
-      absolute_frequency_eqincome[i] <-sum(eusilcA_pop$eqIncome_group==i)
-}
-absolute_frequency_eqincome
 #No. of simulations
 s <- 1
 #Größe der informativen Stichprobe
