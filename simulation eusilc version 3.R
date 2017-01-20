@@ -11,6 +11,8 @@ if(!require("reldist")) install.packages("reldist"); library("reldist")
 if(!require("sampleSelection")) install.packages("sampleSelection"); library("sampleSelection")
 if(!require("dplyr")) install.packages("dplyr"); library("dplyr")
 if(!require("gpclib")) install.packages("gpclib"); library("gpclib")
+if(!require("MASS")) install.packages("MASS"); library("MASS")
+source("function_simulationsdatensatz.R")
 
 set.seed(2)
 
@@ -25,6 +27,9 @@ evaluation <- NULL
 
 #population data
 population <- eusilcA_pop
+#oder simulationsdatensatz 
+#population <- simulationsdatensatz()
+
 population$sma <- population$district
 
 #gruppierungsvariable für einkommen
