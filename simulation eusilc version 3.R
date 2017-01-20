@@ -10,10 +10,12 @@ if(!require("data.table")) install.packages("data.table"); library("data.table")
 if(!require("reldist")) install.packages("reldist"); library("reldist")
 if(!require("sampleSelection")) install.packages("sampleSelection"); library("sampleSelection")
 if(!require("dplyr")) install.packages("dplyr"); library("dplyr")
+if(!require("gpclib")) install.packages("gpclib"); library("gpclib")
+
 set.seed(2)
 
 #No. of simulations
-s <- 100
+s <- 300
 #Größe der informativen Stichprobe -> Ergibt sich aus der gruppenzahl und größe dort
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene
@@ -35,11 +37,9 @@ g <- 400
 popgroupsize <- table(population$groupedincome)
 #also ist die gewichtung populationsgruppengrösse/g 
 gewichte <-  as.numeric(popgroupsize/g)
-
+#jedem fall wird sein gewicht zugeordnet
 population$gewichtung<-NA
 for(i in 1:10) population$gewichtung <- ifelse(population$groupedincome == i, gewichte[i], population$gewichtung)
-
-population$ebpgewichtung<-1/population$gewichtung
 
 #Beginn der Simulation mit s Durchläufen
 for(i in 1:s) {
@@ -78,15 +78,13 @@ for(i in 1:s) {
       
       ebpgini <- estimators(object = ebp_est, MSE = F, CV = F, indicator = c("Gini"))
       
-      sample$freq <- round(sample$gewichtung*0.5)
+      sample$freq <- round(sample$gewichtung*0.3)
       dt <- data.table(sample)
       sample.expanded <- dt[rep(seq(.N), freq), !"freq", with=F]
       #Berechnung des Ginis mittels EBP + Gewichtung
-      ebp_est <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
+      ebp_estw <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
                             self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
                             fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample.expanded, smp_domains = "district", L=1)
-      
-      ebp_estw <- ebp_est
       ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
       
       
@@ -118,7 +116,7 @@ for(i in 1:s) {
       mab_unw <- mean(abs(ginitbl$Population - ginitbl$Ungewichtet))
       
       #Abspeichern der Ergebnismatrix
-      results <- cbind(mse_ebp, mse_ebpw, mse_gew, mse_unw, mab_ebp, mab_ebpw, mab_gew, mab_unw, nr_ebp, nr_ebpw, nr_gew, nr_unw, nr_empty_sma)
+      results <- cbind(mse_unw, mse_gew, mse_ebp, mse_ebpw, mab_unw,  mab_gew,   mab_ebp, mab_ebpw, nr_ebp, nr_ebpw, nr_gew, nr_unw, nr_empty_sma)
       evaluation <- rbind(evaluation, results)
       
       s <- s+1
@@ -128,4 +126,5 @@ for(i in 1:s) {
 summary(evaluation)
 
 
-boxplot(evaluation[,c(1,2,3,4,5)])
+boxplot(evaluation[,c(1:4)])
+boxplot(evaluation[,c(5:8)])
