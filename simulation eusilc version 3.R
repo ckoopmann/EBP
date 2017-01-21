@@ -14,14 +14,14 @@ if(!require("gpclib")) install.packages("gpclib"); library("gpclib")
 if(!require("MASS")) install.packages("MASS"); library("MASS")
 source("function_simulationsdatensatz.R")
 
-set.seed(2)
+set.seed(1234)
 
 #No. of simulations
-s <- 300
+s <- 20
 #Größe der informativen Stichprobe -> Ergibt sich aus der gruppenzahl und größe dort
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene
-c <- 25000
+c <- 50000
 #Auswertungsvektor
 evaluation <- NULL
 
@@ -87,9 +87,16 @@ for(i in 1:s) {
       dt <- data.table(sample)
       sample.expanded <- dt[rep(seq(.N), freq), !"freq", with=F]
       #Berechnung des Ginis mittels EBP + Gewichtung
-      ebp_estw <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
-                            self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
-                            fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample.expanded, smp_domains = "district", L=1)
+      ebp_estw  <- tryCatch(
+            ebp(fixed = eqIncome ~ gender + eqsize + cash + 
+                       self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
+                       fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample.expanded, smp_domains = "district", L=1),
+            error=function(e) e
+      )
+      if(inherits(ebp_estw, "error")){
+            print("Error Caught")
+            next
+      } 
       ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
       
       
@@ -119,12 +126,10 @@ for(i in 1:s) {
       mab_ebpw <- mean(abs(ginitbl$Population - ginitbl$EBP_W ))
       mab_gew <- mean(abs(ginitbl$Population - ginitbl$gew))
       mab_unw <- mean(abs(ginitbl$Population - ginitbl$Ungewichtet))
-      
       #Abspeichern der Ergebnismatrix
       results <- cbind(mse_unw, mse_gew, mse_ebp, mse_ebpw, mab_unw,  mab_gew,   mab_ebp, mab_ebpw, nr_ebp, nr_ebpw, nr_gew, nr_unw, nr_empty_sma)
       evaluation <- rbind(evaluation, results)
       
-      s <- s+1
 }
 
 #Auswertung
