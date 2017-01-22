@@ -49,11 +49,11 @@ for(i in 1:10) population$gewichtung <- ifelse(population$groupedincome == i, ge
 #Beginn der Simulation mit s Durchläufen
 for(i in 1:s) {
 
-      census <- sample_n(population, c)
+      census <- sample_n(population, c, replace = T)
       
       #take a sample of size g from each group
       sp <-split(population, population$groupedincome)
-      samples <- lapply(sp, function(x) x[sample(1:nrow(x), g, FALSE),])
+      samples <- lapply(sp, function(x) x[sample(1:nrow(x), g, replace = FALSE),])
       sample <- do.call(rbind, samples)
       #count the empty SMAs
       c_0 <- sum(table(sample$sma)==0)
@@ -61,15 +61,24 @@ for(i in 1:s) {
       #Berechnung des ungewichteten Gini
       unwgini <- as.data.frame(tapply(sample$eqIncome, sample$sma, function(x){gini(x)}))
       unwgini <- setDT(unwgini, keep.rownames = TRUE)[]
-      unwgini[unwgini == 0] <- gini(sample$eqIncome)
+      unwgini[unwgini == 0] <- gini(sample$eqIncome) # Das geht nicht nicht gibt eine Fehlermeldung. Außerdem gibts ja sowohl einen Gini von 0, als auch NAs. Was soll der Code denn tun?
       names(unwgini) <- c("Domain", "Gini")
+      
       
       #Berechnung des gewichteten Gini
       sample <- as.data.table(sample)
       gewgini <- sample[,.(gewGini = gini(eqIncome, weights = gewichtung)), by = sma]
       gewgini <- setDT(gewgini, keep.rownames = TRUE)[]
+      missing.districts <- levels(population$district)[-which(levels(population$district) %in% as.character(unique(sample$district)))]
+      outofsample_temp <- data.table(missing.districts,rep(NA, times = length(missing.districts)))
+      names(outofsample_temp) <- c("Domain", "Gini")
+      gewgini <- rbindlist(list(gewgini,outofsample_temp))
       gewgini[gewgini == 0] <-  gini(sample$eqIncome, weights = sample$gewichtung)
       names(gewgini) <- c("Domain", "Gini")
+      gewgini <- gewgini[order(gewgini[[1]])]
+      
+     
+      
       
       #Berechnung des wahren Gini
       popgini <- as.data.frame(tapply(population$eqIncome, population$sma, function(x){gini(x)}))
@@ -101,7 +110,7 @@ for(i in 1:s) {
       
       
       #Zusammenführen der Ergebnisse in eine Tabelle
-      df <- merge(popgini, gewgini, by="Domain")
+      df <- merge(popgini, gewgini, by="Domain") # Es werden immer nur 91 Zeilen gemerged weil gewgini nur 91 districts hat. Liegt das am data.table Befehl?
       ginitbl <- merge(df, unwgini, by="Domain")
       ginitbl <- merge(ginitbl, ebpgini$ind, by="Domain")
       names(ginitbl) <- c("Domain", "Population",  "gew", "Ungewichtet", "EBP")
@@ -111,21 +120,21 @@ for(i in 1:s) {
       #Berechnung number of not estimatebale domains
       nr_ebp <- nrow(popgini)-nrow(na.omit(ebpgini$ind))
       nr_ebpw <- nrow(popgini)-nrow(na.omit(ebpginiw$ind))
-      nr_gew <- nrow(popgini)- nrow(na.omit(gewgini))
-      nr_unw <- nrow(popgini)- nrow(na.omit(unwgini))
+      nr_gew <- nrow(popgini)- nrow(na.omit(gewgini)) # NAs tauchen im data.table gar nicht auf: bei 5 fehlenden districts gibt es 91 Werte aber keine NAs.
+      nr_unw <- nrow(popgini)- nrow(na.omit(unwgini)) # hier anders 96 districts und 5 NAs 
       nr_empty_sma <- c_0
       
       #Berechnung MSE
-      mse_ebp <- mean((ginitbl$Population - ginitbl$EBP )^2, na.omit=T)
-      mse_ebpw <- mean((ginitbl$Population - ginitbl$EBP_W )^2, na.omit=T)
-      mse_gew <- mean((ginitbl$Population - ginitbl$gew)^2, na.omit=T)
-      mse_unw <- mean((ginitbl$Population - ginitbl$Ungewichtet)^2, na.omit=T)
+      mse_ebp <- mean((ginitbl$Population - ginitbl$EBP )^2, na.rm=T)
+      mse_ebpw <- mean((ginitbl$Population - ginitbl$EBP_W )^2, na.rm=T)
+      mse_gew <- mean((ginitbl$Population - ginitbl$gew)^2, na.rm=T)
+      mse_unw <- mean((ginitbl$Population - ginitbl$Ungewichtet)^2, na.rm=T)
       
       #Berechnung mean absolute bias
-      mab_ebp <- mean(abs(ginitbl$Population - ginitbl$EBP ))
-      mab_ebpw <- mean(abs(ginitbl$Population - ginitbl$EBP_W ))
-      mab_gew <- mean(abs(ginitbl$Population - ginitbl$gew))
-      mab_unw <- mean(abs(ginitbl$Population - ginitbl$Ungewichtet))
+      mab_ebp <- mean(abs(ginitbl$Population - ginitbl$EBP ),na.rm = T)
+      mab_ebpw <- mean(abs(ginitbl$Population - ginitbl$EBP_W),na.rm = T)
+      mab_gew <- mean(abs(ginitbl$Population - ginitbl$gew),na.rm = T)
+      mab_unw <- mean(abs(ginitbl$Population - ginitbl$Ungewichtet),na.rm = T)
       #Abspeichern der Ergebnismatrix
       results <- cbind(mse_unw, mse_gew, mse_ebp, mse_ebpw, mab_unw,  mab_gew,   mab_ebp, mab_ebpw, nr_ebp, nr_ebpw, nr_gew, nr_unw, nr_empty_sma)
       evaluation <- rbind(evaluation, results)
