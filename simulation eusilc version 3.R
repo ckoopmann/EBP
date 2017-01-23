@@ -21,7 +21,7 @@ s <- 20
 #Größe der informativen Stichprobe -> Ergibt sich aus der gruppenzahl und größe dort
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene
-c <- 50000
+#c <- 25000
 #Auswertungsvektor
 evaluation <- NULL
 
@@ -49,7 +49,7 @@ for(i in 1:10) population$gewichtung <- ifelse(population$groupedincome == i, ge
 #Beginn der Simulation mit s Durchläufen
 for(i in 1:s) {
 
-      census <- sample_n(population, c, replace = T)
+      census <- population
       
       #take a sample of size g from each group
       sp <-split(population, population$groupedincome)
@@ -58,12 +58,28 @@ for(i in 1:s) {
       #count the empty SMAs
       c_0 <- sum(table(sample$sma)==0)
       
+      #Berechnung des Ginis mittels EBP + Gewichtung
+      sample$freq <- round(sample$gewichtung)
+      dt <- data.table(sample)
+      sample.expanded <- dt[rep(seq(.N), freq), !"freq", with=F]
+      #wegen konvergenzproblemen wird tryCatch eingebaut
+      ebp_estw  <- tryCatch(
+            ebp(fixed = eqIncome ~ gender + eqsize + cash + 
+                      self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
+                      fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample.expanded, smp_domains = "district", L=1),
+            error=function(e) e
+      )
+      if(inherits(ebp_estw, "error")){
+            print("Error Caught")
+            next
+      } 
+      ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
+      
       #Berechnung des ungewichteten Gini
       unwgini <- as.data.frame(tapply(sample$eqIncome, sample$sma, function(x){gini(x)}))
       unwgini <- setDT(unwgini, keep.rownames = TRUE)[]
       unwgini[unwgini == 0] <- gini(sample$eqIncome) # Das geht nicht nicht gibt eine Fehlermeldung. Außerdem gibts ja sowohl einen Gini von 0, als auch NAs. Was soll der Code denn tun?
       names(unwgini) <- c("Domain", "Gini")
-      
       
       #Berechnung des gewichteten Gini
       sample <- as.data.table(sample)
@@ -74,11 +90,9 @@ for(i in 1:s) {
       names(outofsample_temp) <- c("Domain", "Gini")
       gewgini <- rbindlist(list(gewgini,outofsample_temp))
       gewgini[gewgini == 0] <-  gini(sample$eqIncome, weights = sample$gewichtung)
+      gewgini[is.na(gewgini)] <-  gini(sample$eqIncome, weights = sample$gewichtung)
       names(gewgini) <- c("Domain", "Gini")
       gewgini <- gewgini[order(gewgini[[1]])]
-      
-     
-      
       
       #Berechnung des wahren Gini
       popgini <- as.data.frame(tapply(population$eqIncome, population$sma, function(x){gini(x)}))
@@ -91,23 +105,6 @@ for(i in 1:s) {
                             fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample, smp_domains = "district", L=1)
       
       ebpgini <- estimators(object = ebp_est, MSE = F, CV = F, indicator = c("Gini"))
-      
-      sample$freq <- round(sample$gewichtung*0.3)
-      dt <- data.table(sample)
-      sample.expanded <- dt[rep(seq(.N), freq), !"freq", with=F]
-      #Berechnung des Ginis mittels EBP + Gewichtung
-      ebp_estw  <- tryCatch(
-            ebp(fixed = eqIncome ~ gender + eqsize + cash + 
-                       self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
-                       fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample.expanded, smp_domains = "district", L=1),
-            error=function(e) e
-      )
-      if(inherits(ebp_estw, "error")){
-            print("Error Caught")
-            next
-      } 
-      ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
-      
       
       #Zusammenführen der Ergebnisse in eine Tabelle
       df <- merge(popgini, gewgini, by="Domain") # Es werden immer nur 91 Zeilen gemerged weil gewgini nur 91 districts hat. Liegt das am data.table Befehl?
@@ -135,15 +132,25 @@ for(i in 1:s) {
       mab_ebpw <- mean(abs(ginitbl$Population - ginitbl$EBP_W),na.rm = T)
       mab_gew <- mean(abs(ginitbl$Population - ginitbl$gew),na.rm = T)
       mab_unw <- mean(abs(ginitbl$Population - ginitbl$Ungewichtet),na.rm = T)
+      
+      #mean bias
+      mb_ebp <- mean((ginitbl$Population - ginitbl$EBP ),na.rm = T)
+      mb_ebpw <- mean((ginitbl$Population - ginitbl$EBP_W),na.rm = T)
+      mb_gew <- mean((ginitbl$Population - ginitbl$gew),na.rm = T)
+      mb_unw <- mean((ginitbl$Population - ginitbl$Ungewichtet),na.rm = T)      
+      
       #Abspeichern der Ergebnismatrix
-      results <- cbind(mse_unw, mse_gew, mse_ebp, mse_ebpw, mab_unw,  mab_gew,   mab_ebp, mab_ebpw, nr_ebp, nr_ebpw, nr_gew, nr_unw, nr_empty_sma)
+      results <- cbind(mse_unw, mse_gew, mse_ebp, mse_ebpw, mab_unw,  mab_gew, mab_ebp, mab_ebpw, mb_unw,  mb_gew, mb_ebp, mb_ebpw, nr_ebp, nr_ebpw, nr_gew, nr_unw, nr_empty_sma)
       evaluation <- rbind(evaluation, results)
       
 }
 
+#über alle durchläufe bias und varianz
+#varianz
+
 #Auswertung
 summary(evaluation)
 
-
 boxplot(evaluation[,c(1:4)])
 boxplot(evaluation[,c(5:8)])
+boxplot(evaluation[,c(9:12)])
