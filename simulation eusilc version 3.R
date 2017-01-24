@@ -17,7 +17,7 @@ source("function_simulationsdatensatz.R")
 set.seed(1234)
 
 #No. of simulations
-s <- 20
+s <- 50
 #Größe der informativen Stichprobe -> Ergibt sich aus der gruppenzahl und größe dort
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene
@@ -66,7 +66,7 @@ for(i in 1:s) {
       ebp_estw  <- tryCatch(
             ebp(fixed = eqIncome ~ gender + eqsize + cash + 
                       self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
-                      fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample.expanded, smp_domains = "district", L=1),
+                      fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample.expanded, smp_domains = "district", L=50),
             error=function(e) e
       )
       if(inherits(ebp_estw, "error")){
@@ -102,7 +102,7 @@ for(i in 1:s) {
       #Berechnung des Ginis mittels EBP
       ebp_est <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
                             self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
-                            fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample, smp_domains = "district", L=1)
+                            fam_allow + house_allow + cap_inv + tax_adj, pop_data = census, pop_domains = "district", smp_data = sample, smp_domains = "district", L=50)
       
       ebpgini <- estimators(object = ebp_est, MSE = F, CV = F, indicator = c("Gini"))
       
@@ -151,6 +151,8 @@ for(i in 1:s) {
 #Auswertung
 summary(evaluation)
 
+
 boxplot(evaluation[,c(1:4)])
 boxplot(evaluation[,c(5:8)])
 boxplot(evaluation[,c(9:12)])
+
