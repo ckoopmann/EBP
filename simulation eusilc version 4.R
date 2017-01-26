@@ -13,11 +13,12 @@ if(!require("dplyr")) install.packages("dplyr"); library("dplyr")
 if(!require("gpclib")) install.packages("gpclib"); library("gpclib")
 if(!require("MASS")) install.packages("MASS"); library("MASS")
 source("function_simulationsdatensatz.R")
+rotate <- function(x) t(apply(x, 2, rev))
 
 set.seed(1234)
 
 #No. of simulations
-s <- 10
+s <- 100
 #Größe der informativen Stichprobe -> Ergibt sich aus der gruppenzahl und größe dort
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene
@@ -66,22 +67,26 @@ sample_org <- do.call(rbind, samples_org)
 dt_s <- data.table(population)
 dt_s.expanded <- dt_s[rep(seq(.N), freq), !"freq", with=F]
 
+EBPlong <- NULL
+EBP_Wlong <- NULL     
+unwlong <- NULL
+gewlong <- NULL
 
 #Beginn der Simulation mit s Durchläufen
 for(i in 1:s) {
       #take a sample according to number of obs. in sma
-      
       sample_1 <- NULL
-         for (area in levels(sample_org$sma)) {
+      for (area in levels(sample_org$sma)) {
             h <- round((nrow(sample_org[sample_org$sma %in% area,]))/5)
             data_temp <- population[population$sma %in% area,]
-             sp <-split(data_temp, data_temp$groupedincome)
-             samples <- lapply(sp, function(x) x[sample(1:nrow(x), h, FALSE),])
-             sample <- do.call(rbind, samples)
-             sample_1 <- rbind(sample_1, sample) 
-             
+            sp <-split(data_temp, data_temp$groupedincome)
+            samples <- lapply(sp, function(x) x[sample(1:nrow(x), h, FALSE),])
+            sample <- do.call(rbind, samples)
+            sample_1 <- rbind(sample_1, sample) 
+            
       }
-      mean(sample_org$eqIncome) 
+      sample <- sample_1
+       mean(sample_org$eqIncome) 
       mean(sample$eqIncome) 
       mean(population$eqIncome) 
       mean(dt_s.expanded$eqIncome) 
@@ -153,8 +158,7 @@ for(i in 1:s) {
       nr_ebpw <- nrow(popgini)-nrow(na.omit(ebpginiw$ind))
       nr_gew <- nrow(popgini)- nrow(na.omit(gewgini)) # NAs tauchen im data.table gar nicht auf: bei 5 fehlenden districts gibt es 91 Werte aber keine NAs.
       nr_unw <- nrow(popgini)- nrow(na.omit(unwgini)) # hier anders 96 districts und 5 NAs 
-      nr_empty_sma <- c_0
-      
+       
       #Berechnung MSE
       mse_ebp <- mean((ginitbl$Population - ginitbl$EBP )^2, na.rm=T)
       mse_ebpw <- mean((ginitbl$Population - ginitbl$EBP_W )^2, na.rm=T)
@@ -173,14 +177,38 @@ for(i in 1:s) {
       mb_gew <- mean((ginitbl$Population - ginitbl$gew),na.rm = T)
       mb_unw <- mean((ginitbl$Population - ginitbl$Ungewichtet),na.rm = T)      
       
+      
+
       #Abspeichern der Ergebnismatrix
-      results <- cbind(mse_unw, mse_gew, mse_ebp, mse_ebpw, mab_unw,  mab_gew, mab_ebp, mab_ebpw, mb_unw,  mb_gew, mb_ebp, mb_ebpw, nr_ebp, nr_ebpw, nr_gew, nr_unw, nr_empty_sma)
+      EBPlong <- cbind(EBPlong, ginitbl$EBP)
+      EBP_Wlong <- cbind(EBP_Wlong, ginitbl$EBP_W)      
+      unwlong <- cbind(unwlong, ginitbl$Ungewichtet)
+      gewlong <- cbind(gewlong, ginitbl$gew)
+      
+      results <- cbind(mse_unw, mse_gew, mse_ebp, mse_ebpw, mab_unw,  mab_gew, mab_ebp, mab_ebpw, mb_unw,  mb_gew, mb_ebp, mb_ebpw, nr_ebp, nr_ebpw, nr_gew, nr_unw)
       evaluation <- rbind(evaluation, results)
       
 }
 
+
+
+
+
+
+
 #über alle durchläufe bias und varianz
 #varianz
+
+MSE_EBP_long <- rowMeans(((EBPlong-ginitbl$Population)^2))
+MSE_EBP_Wlong <- rowMeans(((EBP_Wlong-ginitbl$Population)^2))
+MSE_unw_long <- rowMeans(((unwlong-ginitbl$Population)^2))
+MSE_gew_long <- rowMeans(((gewlong-ginitbl$Population)^2))
+
+final <- rbind(MSE_unw_long, MSE_gew_long, MSE_EBP_long, MSE_EBP_Wlong)
+final <- as.data.frame(final)
+names(final) <- as.vector(ginitbl$Domain)
+
+rowMeans(final)
 
 #Auswertung
 summary(evaluation)
