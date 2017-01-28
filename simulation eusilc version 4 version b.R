@@ -84,22 +84,28 @@ population$groupedincome <- factor(population$groupedincome, labels =c(1:5))
 #Gewichte werden berechnet - wieviele Personen repräsentiert eine Person pro Gruppe
 #Wir ziehen später gleichverteilt aus jeder Einkommensgruppe g Fälle
 g <- 2000
-popgroupsize <- table(population$groupedincome)
-popgroupsize <-  popgroupsize
-#Also ist die Gewichtung Populationsgruppengrösse/g 
-gewichte <-  as.numeric(popgroupsize/g)
-#jedem Fall wird sein Gewicht zugeordnet
-population$gewichtung<-NA
-for(i in 1:5) population$gewichtung <- ifelse(population$groupedincome == i, gewichte[i], population$gewichtung)
-population$freq <- round(population$gewichtung)
 
 #Es wird einmal gesamplet, um die Anzahl je SMA festzulegen
 sp_org <-split(population, population$groupedincome)
 samples_org <- lapply(sp_org, function(x) x[sample(1:nrow(x), g, replace = FALSE),])
 sample_org <- do.call(rbind, samples_org)
 
+population$gewichtung<-NA
+for (area in levels(sample_org$sma)) {
+      #Der Datensatz wird temporär nach SMA aufgeteilt
+      data_temp <- population[population$sma %in% area,]
+      smagroupsize <- table(data_temp$groupedincome)
+      #da gleichverteilt gezogen wird, ist die gewichtung 
+      h <- round((nrow(sample_org[sample_org$sma %in% area,]))/5)
+      gewichte <-  as.numeric(smagroupsize/h)
+      #jedem Fall wird sein Gewicht zugeordnet
+      for(i in 1:5)  population$gewichtung <- ifelse(population$sma %in% area &  population$groupedincome == i,  gewichte[i],  population$gewichtung)
+}
+population$freq <- round(population$gewichtung)
+
+
 #No. Simulations
-s <- 100
+s <- 10
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene (habe den wieder eingstellt, sonst dauert es ewig)
 c <- 25000
@@ -261,3 +267,4 @@ boxplot(evaluation[,c(1:4)])
 boxplot(evaluation[,c(5:8)])
 boxplot(evaluation[,c(9:12)])
 
+boxplot((EBPlong-ginitbl$Population)^2)
