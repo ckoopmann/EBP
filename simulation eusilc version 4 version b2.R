@@ -305,3 +305,13 @@ names(popgini) <- c("Domain", "Gini")
 # boxplot(evaluation[,c(9:12)])
 # 
 # boxplot((EBPlong-ginitbl$Population)^2)
+
+
+
+
+
+#Problem bleibt dass emdi abbricht also hier eine Funktion um Nullelemente zu beseitigen:
+rmNullObs <- function(x) {
+      x <- Filter(Negate(is.NullOb), x)
+      lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
+}
