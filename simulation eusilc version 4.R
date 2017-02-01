@@ -39,6 +39,7 @@ set.seed(1234)
 
 # Erweiterung des Datensatzes 
 population <- eusilcA_pop
+
 #Zu kleine müssen zunächst raus, da hier keine fälle in allen Einkommenskategorien vorliegen
 tbl <- table(population$district)
 drop <- names(tbl)[tbl <=  20]
@@ -49,6 +50,7 @@ population <- droplevels(population)
 #Es wird zufällig festgelegt, wer wie oft dupliziert wird
 population$expansion <-  round(runif(nrow(population), 1, 8))
 population$expanded <-  ifelse(population$expansion>1, T, F)
+
 #Fehlerterm wird zufällig gezogen
 population$error <-  rnorm(nrow(population), 0, 5000)
 dt <- data.table(population)
@@ -99,7 +101,7 @@ samples_org <- lapply(sp_org, function(x) x[sample(1:nrow(x), g, replace = FALSE
 sample_org <- do.call(rbind, samples_org)
 
 #No. Simulations
-s <- 100
+s <- 10
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene (habe den wieder eingstellt, sonst dauert es ewig)
 c <- 25000
@@ -238,9 +240,19 @@ for(i in 1:s) {
       gewlong <- cbind(gewlong, ginitbl$gew)
       mselong <- cbind(mselong, msetbl)
       
-      
+      ginitbl$Simulation <- i
+      if(exists("EvaluationDataByRegion")){
+            EvaluationDataByRegion <- rbind(EvaluationDataByRegion,ginitbl)
+      }
+      else{
+            EvaluationDataByRegion <- ginitbl
+      }
 }
 
+#Convert Evaluation by Region into "long" format and data.table
+EvaluationDataByRegion <- as.data.table(EvaluationDataByRegion)
+EvaluationDataByRegion <- melt(EvaluationDataByRegion, id.vars = c("Domain","Simulation", "Population")) 
+save(EvaluationDataByRegion, file = "EvaluationDataByRegion")
 #Auswertung
 #Berechnung von MSE
 
