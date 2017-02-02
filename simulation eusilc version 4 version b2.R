@@ -122,7 +122,7 @@ population$freq <- round(population$gewichtung)
 
 
 #No. Simulations
-s <- 10
+s <- 2
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene (habe den wieder eingstellt, sonst dauert es ewig)
 c <- 25000
@@ -140,11 +140,11 @@ b <- 10
 # gewlong <- NULL
 # mselong <- NULL
 
-EBP <- list()
-EBP_weighted <- list()
-Gini <- list()
-Gini_weighted <- list()
-EBP_MSE <- list()
+# EBP <- list()
+# EBP_weighted <- list()
+# Gini <- list()
+# Gini_weighted <- list()
+# EBP_MSE <- list()
 
 #Beginn der Simulation mit s Durchläufen
 for(i in 1:s) {
@@ -183,7 +183,7 @@ for(i in 1:s) {
             next
       } 
       ebpginiw <- estimators(object = ebp_estw, MSE = F, CV = F, indicator = c("Gini"))
-      EBP_weighted[[i]] <- ebpginiw$ind[,2]
+      # EBP_weighted[[i]] <- ebpginiw$ind[,2]
       
       #Berechnung des ungewichteten Gini mittels EBP
       ebp_estw  <- tryCatch(
@@ -197,14 +197,14 @@ for(i in 1:s) {
       } 
       
       ebpgini <- estimators(object = ebp_est, MSE = T, CV = F, indicator = c("Gini"))
-      EBP[[i]] <- ebpgini$ind[,2]
-      EBP_MSE[[i]] <- ebpgini$ind[,3]
+      # EBP[[i]] <- ebpgini$ind[,2]
+      # EBP_MSE[[i]] <- ebpgini$ind[,3]
       #Berechnung des ungewichteten Gini
       unwgini <- as.data.frame(tapply(sample$eqIncome, sample$sma, function(x){gini(x)}))
       unwgini <- setDT(unwgini, keep.rownames = TRUE)[]
       #unwgini[unwgini == 0] <- gini(sample$eqIncome) # Das geht nicht nicht gibt eine Fehlermeldung. Außerdem gibts ja sowohl einen Gini von 0, als auch NAs. Was soll der Code denn tun?
       names(unwgini) <- c("Domain", "Gini")
-      Gini[[i]] <- unwgini$Gini
+      # Gini[[i]] <- unwgini$Gini
       
       
       #Berechnung des gewichteten Gini
@@ -219,20 +219,23 @@ for(i in 1:s) {
       # gewgini[is.na(gewgini)] <-  gini(sample$eqIncome, weights = sample$gewichtung)
       names(gewgini) <- c("Domain", "Gini")
       # gewgini <- gewgini[order(gewgini[[1]])]
-      Gini_weighted[[i]] <- gewgini$Gini
+      # Gini_weighted[[i]] <- gewgini$Gini
       
-      
+      #Berechnung des wahren Gini -- ausserhalb der Schleife, weil der ja konstant bleibt
+      popgini <- as.data.frame(tapply(population$eqIncome, population$sma, function(x){gini(x)}))
+      popgini <- setDT(popgini, keep.rownames = TRUE)[]
+      names(popgini) <- c("Domain", "Gini")
 
       
       #Zusammenführen der Ergebnisse in eine Tabelle
-      # df <- merge(popgini, gewgini, by="Domain") # Es werden immer nur 91 Zeilen gemerged weil gewgini nur 91 districts hat. Liegt das am data.table Befehl?
-      # ginitbl <- merge(df, unwgini, by="Domain")
-      # ginitbl <- merge(ginitbl, ebpgini$ind[,c(1,2)], by="Domain")
-      # names(ginitbl) <- c("Domain", "Population",  "gew", "Ungewichtet", "EBP")
-      # ginitbl <- merge(ginitbl, ebpginiw$ind, by="Domain")
-      # names(ginitbl) <- c("Domain", "Population",  "gew", "Ungewichtet", "EBP", "EBP_W")
-      # 
-      # msetbl <- ebpgini$ind[,c(3)]
+      df <- merge(popgini, gewgini, by="Domain") # Es werden immer nur 91 Zeilen gemerged weil gewgini nur 91 districts hat. Liegt das am data.table Befehl?
+      ginitbl <- merge(df, unwgini, by="Domain")
+      ginitbl <- merge(ginitbl, ebpgini$ind[,c(1,2)], by="Domain")
+      names(ginitbl) <- c("Domain", "Population",  "gew", "Ungewichtet", "EBP")
+      ginitbl <- merge(ginitbl, ebpginiw$ind, by="Domain")
+      names(ginitbl) <- c("Domain", "Population",  "gew", "Ungewichtet", "EBP", "EBP_W")
+
+      msetbl <- ebpgini$ind[,c(1,3)]
       # 
       # #Berechnung number of not estimatebale domains
       # nr_ebp <- nrow(popgini)-nrow(na.omit(ebpgini$ind))
@@ -268,11 +271,7 @@ for(i in 1:s) {
       # unwlong <- cbind(unwlong, ginitbl$Ungewichtet)
       # gewlong <- cbind(gewlong, ginitbl$gew)
       # mselong <- cbind(mselong, msetbl)
-      names(EBP[[i]]) <- levels(population$sma)
-      names(EBP_weighted[[i]]) <- levels(population$sma)
-      names(Gini[[i]]) <- levels(population$sma)
-      names(Gini_weighted[[i]]) <- levels(population$sma)
-      names(EBP_MSE[[i]]) <- levels(population$sma)
+  
       
 }
 
@@ -291,10 +290,7 @@ for(i in 1:s) {
 # rowMeans(final)
 
 
-#Berechnung des wahren Gini -- ausserhalb der Schleife, weil der ja konstant bleibt
-popgini <- as.data.frame(tapply(population$eqIncome, population$sma, function(x){gini(x)}))
-popgini <- setDT(popgini, keep.rownames = TRUE)[]
-names(popgini) <- c("Domain", "Gini")
+
 
 
 
@@ -311,7 +307,7 @@ names(popgini) <- c("Domain", "Gini")
 
 
 #Problem bleibt dass emdi abbricht also hier eine Funktion um Nullelemente zu beseitigen:
-rmNullObs <- function(x) {
-      x <- Filter(Negate(is.NullOb), x)
-      lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
-}
+# rmNullObs <- function(x) {
+#       x <- Filter(Negate(is.NullOb), x)
+#       lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
+#}
