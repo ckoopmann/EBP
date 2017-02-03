@@ -53,19 +53,9 @@ population$expanded <-  ifelse(population$expansion>1, T, F)
 dt <- data.table(population)
 population.expanded <- dt[rep(seq(.N), expansion), !"expansion", with=F]
 population.expanded$error <-  rnorm(nrow(population.expanded), 0, 5000)
-# population$error[which(population$eqIncome==0)]
-# population$expanded[which(population$eqIncome==0)]
-# hist(population$error)
+
 summary(population.expanded$eqIncome)
 
-# for(i in 2:nrow(population.expanded)){
-#       if(population.expanded$expanded[i]==FALSE | population.expanded$expanded[i-1]==FALSE){
-#             population.expanded$eqIncome[i] <- population.expanded$eqIncome[i]
-#       }else{
-#             population.expanded$eqIncome[i] <- population.expanded$eqIncome[i] + population.expanded$error[i]
-#       }
-#       print(i)
-# }
 #Die duplizierten Fälle erhalten den Fehler hinzu
 population.expanded$eqIncome <- ifelse(population.expanded$expanded==T, population.expanded$eqIncome+population.expanded$error, population.expanded$eqIncome)
 
@@ -82,8 +72,6 @@ lm <- lm(eqIncome ~ gender + eqsize + cash +
 summary(lm)
 library(car)
 vif(lm)
-#Die idee, den ganzen Datensatz zu simulieren wurde verworfen, hat aber ähnliche Ergebnisse erzielt
-#population <- simulationsdatensatz()
 
 #SMA ist District
 population$sma <- population$district
@@ -122,7 +110,7 @@ population$freq <- round(population$gewichtung)
 
 
 #No. Simulations
-s <- 2
+s <- 10
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene (habe den wieder eingstellt, sonst dauert es ewig)
 c <- 25000
@@ -131,20 +119,6 @@ census <- sample_n(population, c)
 l <- 50 
 b <- 10
 
-
-#Auswertungsvektoren 
-# evaluation <- NULL
-# EBPlong <- NULL
-# EBP_Wlong <- NULL     
-# unwlong <- NULL
-# gewlong <- NULL
-# mselong <- NULL
-
-# EBP <- list()
-# EBP_weighted <- list()
-# Gini <- list()
-# Gini_weighted <- list()
-# EBP_MSE <- list()
 
 #Beginn der Simulation mit s Durchläufen
 for(i in 1:s) {
@@ -197,29 +171,20 @@ for(i in 1:s) {
       } 
       
       ebpgini <- estimators(object = ebp_est, MSE = T, CV = F, indicator = c("Gini"))
-      # EBP[[i]] <- ebpgini$ind[,2]
-      # EBP_MSE[[i]] <- ebpgini$ind[,3]
+
       #Berechnung des ungewichteten Gini
       unwgini <- as.data.frame(tapply(sample$eqIncome, sample$sma, function(x){gini(x)}))
       unwgini <- setDT(unwgini, keep.rownames = TRUE)[]
-      #unwgini[unwgini == 0] <- gini(sample$eqIncome) # Das geht nicht nicht gibt eine Fehlermeldung. Außerdem gibts ja sowohl einen Gini von 0, als auch NAs. Was soll der Code denn tun?
+
       names(unwgini) <- c("Domain", "Gini")
-      # Gini[[i]] <- unwgini$Gini
-      
+
       
       #Berechnung des gewichteten Gini
       sample <- as.data.table(sample)
       gewgini <- sample[,.(gewGini = gini(eqIncome, weights = gewichtung)), by = sma]
       gewgini <- setDT(gewgini, keep.rownames = TRUE)[]
-      # missing.districts <- levels(population$district)[-which(levels(population$district) %in% as.character(unique(sample$district)))]
-      # outofsample_temp <- data.table(missing.districts,rep(NA, times = length(missing.districts)))
-      # names(outofsample_temp) <- c("Domain", "Gini")
-      # gewgini <- rbindlist(list(gewgini,outofsample_temp))
-      # gewgini[gewgini == 0] <-  gini(sample$eqIncome, weights = sample$gewichtung)
-      # gewgini[is.na(gewgini)] <-  gini(sample$eqIncome, weights = sample$gewichtung)
       names(gewgini) <- c("Domain", "Gini")
-      # gewgini <- gewgini[order(gewgini[[1]])]
-      # Gini_weighted[[i]] <- gewgini$Gini
+
       
       #Berechnung des wahren Gini -- ausserhalb der Schleife, weil der ja konstant bleibt
       popgini <- as.data.frame(tapply(population$eqIncome, population$sma, function(x){gini(x)}))
@@ -235,79 +200,22 @@ for(i in 1:s) {
       ginitbl <- merge(ginitbl, ebpginiw$ind, by="Domain")
       names(ginitbl) <- c("Domain", "Population",  "gew", "Ungewichtet", "EBP", "EBP_W")
 
-      msetbl <- ebpgini$ind[,c(1,3)]
-      # 
-      # #Berechnung number of not estimatebale domains
-      # nr_ebp <- nrow(popgini)-nrow(na.omit(ebpgini$ind))
-      # nr_ebpw <- nrow(popgini)-nrow(na.omit(ebpginiw$ind))
-      # nr_gew <- nrow(popgini)- nrow(na.omit(gewgini)) # NAs tauchen im data.table gar nicht auf: bei 5 fehlenden districts gibt es 91 Werte aber keine NAs.
-      # nr_unw <- nrow(popgini)- nrow(na.omit(unwgini)) # hier anders 96 districts und 5 NAs 
-      # 
-      # #Berechnung MSE über alle SMA
-      # mse_ebp <- mean((ginitbl$Population - ginitbl$EBP )^2, na.rm=T)
-      # mse_ebpw <- mean((ginitbl$Population - ginitbl$EBP_W )^2, na.rm=T)
-      # mse_gew <- mean((ginitbl$Population - ginitbl$gew)^2, na.rm=T)
-      # mse_unw <- mean((ginitbl$Population - ginitbl$Ungewichtet)^2, na.rm=T)
-      # 
-      # #Berechnung mean absolute bias über alle SMA
-      # mab_ebp <- mean(abs(ginitbl$Population - ginitbl$EBP ),na.rm = T)
-      # mab_ebpw <- mean(abs(ginitbl$Population - ginitbl$EBP_W),na.rm = T)
-      # mab_gew <- mean(abs(ginitbl$Population - ginitbl$gew),na.rm = T)
-      # mab_unw <- mean(abs(ginitbl$Population - ginitbl$Ungewichtet),na.rm = T)
-      # 
-      # #mean bias über alle SMA
-      # mb_ebp <- mean((ginitbl$Population - ginitbl$EBP ),na.rm = T)
-      # mb_ebpw <- mean((ginitbl$Population - ginitbl$EBP_W),na.rm = T)
-      # mb_gew <- mean((ginitbl$Population - ginitbl$gew),na.rm = T)
-      # mb_unw <- mean((ginitbl$Population - ginitbl$Ungewichtet),na.rm = T)      
-      # 
-      # #Ergebnismatrix
-      # results <- cbind(mse_unw, mse_gew, mse_ebp, mse_ebpw, mab_unw,  mab_gew, mab_ebp, mab_ebpw, mb_unw,  mb_gew, mb_ebp, mb_ebpw, nr_ebp, nr_ebpw, nr_gew, nr_unw)
-      # evaluation <- rbind(evaluation, results)
-      # 
-      # #Die Ginis für die einzelnen SMA werden gespeichert
-      # EBPlong <- cbind(EBPlong, ginitbl$EBP)
-      # EBP_Wlong <- cbind(EBP_Wlong, ginitbl$EBP_W)      
-      # unwlong <- cbind(unwlong, ginitbl$Ungewichtet)
-      # gewlong <- cbind(gewlong, ginitbl$gew)
-      # mselong <- cbind(mselong, msetbl)
-  
+      ginitbl <- merge(ginitbl, ebpgini$ind[,c(1,3)], by = "Domain")
       
+      #Save Samplesizes
+      samplesizes <- data.table(Domain = names(table(sample_org$sma)), SampleSize = as.vector(table(sample_org$sma)))
+      ginitbl <- merge(ginitbl, samplesizes, by = "Domain")
+      
+      ginitbl$Simulation <- i
+      if(exists("EvaluationDataByRegion")){
+            EvaluationDataByRegion <- rbind(EvaluationDataByRegion,ginitbl)
+      }
+      else{
+            EvaluationDataByRegion <- ginitbl
+      }
+      print(i)
 }
 
-#Auswertung
-#Berechnung von MSE
-# 
-# MSE_EBP_long <- rowMeans(((EBPlong-ginitbl$Population)^2))
-# MSE_EBP_Wlong <- rowMeans(((EBP_Wlong-ginitbl$Population)^2))
-# MSE_unw_long <- rowMeans(((unwlong-ginitbl$Population)^2))
-# MSE_gew_long <- rowMeans(((gewlong-ginitbl$Population)^2))
-# 
-# final <- rbind(MSE_unw_long, MSE_gew_long, MSE_EBP_long, MSE_EBP_Wlong)
-# final <- as.data.frame(final)
-# names(final) <- as.vector(ginitbl$Domain)
-# 
-# rowMeans(final)
-
-
-
-
-
-
-#Timo meinte, das hier macht ja keinen Sinn...
-# summary(evaluation)
-# boxplot(evaluation[,c(1:4)])
-# boxplot(evaluation[,c(5:8)])
-# boxplot(evaluation[,c(9:12)])
-# 
-# boxplot((EBPlong-ginitbl$Population)^2)
-
-
-
-
-
-#Problem bleibt dass emdi abbricht also hier eine Funktion um Nullelemente zu beseitigen:
-# rmNullObs <- function(x) {
-#       x <- Filter(Negate(is.NullOb), x)
-#       lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
-#}
+EvaluationDataPath <- "EvaluationData"
+EvaluationDataFilename <- paste0("Evaluation","NoSim",s,"Date",as.character(Sys.Date()))
+save(EvaluationDataByRegion, file = paste(EvaluationDataPath, EvaluationDataFilename, sep = "/"))
