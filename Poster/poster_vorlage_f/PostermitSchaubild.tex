@@ -1,0 +1,270 @@
+\documentclass[fleqn,final]{beamer}
+\mode<presentation>
+{  \usetheme{I6dv} }
+\usepackage{times}
+\usepackage{etex}
+\usepackage{amsmath,amssymb}
+%\usepackage{sfmath} % for sans serif math fonts; wget http://dtrx.de/od/tex/sfmath.sty
+\usepackage[english]{babel}
+\usepackage[ansinew]{inputenc}
+\usepackage[orientation=portrait,size=a0,scale=1.25,debug]{beamerposter}
+\usepackage{booktabs,array}
+\usepackage{listings}
+%\usepackage{picins,graphicx}
+\usepackage{xspace}
+\usepackage{fp}
+\usepackage{ifthen}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{tikz,colortbl,pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade,eurosym, dsfont}
+\listfiles
+\newcommand*{\signstream}{SignStream\texttrademark\xspace}
+\newcommand{\WichtigFarbe}{\color{red}}%
+\newcommand{\TextFarbe}{\color{black}}%
+\newcommand{\Pheight}{\rule[-5mm]{0cm}{1cm}}
+
+\definecolor{darkblue}{rgb}{0.28,0,0.60}
+\definecolor{hblue}{rgb}{0.70,0.7,1}
+\definecolor{NR0}{rgb}{1,1,1}
+\definecolor{NR1}{rgb}{1,1,0.8}
+\definecolor{NR2}{rgb}{1,1,0.5}
+\definecolor{NR3}{rgb}{1,1,0.25}
+\definecolor{NR4}{rgb}{1,1,0.0}
+\definecolor{NR5}{rgb}{1,0.75,0.0}
+\definecolor{NR6}{rgb}{1,0.5,0.0}
+\definecolor{NR7}{rgb}{1,0.25,0.0}
+\definecolor{NR8}{rgb}{1,0,0.0}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamerfont{title}{series=\bfseries}
+%\setbeamercolor{frametitle}{fg=UTblue}
+\setbeamerfont{frametitle}{series=\bfseries}
+\setbeamertemplate{frametitle}
+{
+\begin{centering}
+\insertframetitle\vspace*{-4mm}\par
+\end{centering}
+}
+
+\newcommand{\convD}{\stackrel{\text{d}}{\longrightarrow}}
+\newcommand{\E}{\text{E}\,}
+\newcommand{\var}{\text{V}\,}
+
+\title{\huge Hier steht der Titel }
+\author{\large Autor 1 und Autor 2}
+\institute{Universität Bamberg} % (oder halt Berlin)
+
+\date{today}
+\begin{document}
+
+\begin{frame}
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+%
+\small
+\begin{columns}[t] % Wechsel in die Spaltenumgebung
+
+\begin{column}{.3\linewidth} 
+\begin{block}{Erklärung Vorgehen  \Pheight}
+\begin{enumerate} % für Stichpunkte
+\item Das Thema ist besonders relevant, weil ...
+\item Außerdem ...
+\item Weiterhin ...
+
+\end{enumerate}
+
+\end{block}
+\end{column}
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+%
+
+\begin{column}{.3\linewidth}
+\begin{block}{Übersicht Genetic Matching Algorithmus\Pheight}
+
+
+\end{block}
+\end{column}
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+%
+
+\begin{column}{.3\linewidth}
+ \begin{block}{Genetic Matching Theorie \Pheight}
+
+\begin{itemize}
+\item Genetic Matching ist ein verallgemeinertes Distanzmaß (Gleichgewichtung der Kovariaten entspricht der Mahalanobis Distanz)
+\item Das Verfahren verwendet \textbf{GENOUD} (\textbf{Gen}etic \textbf{O}ptimization \textbf{U}sing \textbf{D}erivates)
+\begin{itemize}
+\item Basierend auf neun heuristischen Regeln werden neue Generationen an Gewichtungen erzeugt
+\item durchschnittlich werden die angelegten Kriterien so von Generation zu Generation verbessert
+\end{itemize}
+\item Genetic Matching ist mit anderen Matching Methoden verknüpfbar (z.B. Nearest Neighbour)
+\item Über eine Verlustfunktion (paarweise t-Tests, KS-Tests) wird die beste Gewichtung der Kovariaten zur Erstellung der nächsten Generation ausgewählt
+\item In jedem Schritt wird der kleinste p-Wert der standardisierten Tests maximiert
+
+\end{itemize}
+
+
+\end{block}
+\end{column}
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+%
+
+\end{columns}
+
+
+\begin{columns}[t]
+
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+%
+
+
+  
+\begin{column}{.3\linewidth}
+    
+    
+
+
+    \begin{block}{Theorie \Pheight}
+
+Formeln macht man so:
+$$\int_{a}^{b} f(x)\, dx \approx (b-a)\frac{f(a) + f(b)}{2}$$
+
+
+\end{block}
+\end{column}
+
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+% Folie 5
+   
+\begin{column}{.3\linewidth}
+
+ \begin{block}{Umsetzung \Pheight}
+
+Hier wird das Vorgehen erklärt:
+\begin{itemize}
+\item ...
+\item ...
+\item ...
+\end{itemize}
+\end{block}
+\end{column}     
+
+
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+% Folie 6 
+
+  % 
+
+
+\begin{column}{.3\linewidth}
+
+
+\begin{block}{Umsetzung \Pheight}
+Ein Algorithmus zur Lösung des Problems:
+\begin{enumerate} % Für Aufzählungen
+\item Wähle Startwerte für die Parameter.
+\item Fülle die fehlenden Daten auf.
+\item Berechne über die aufgefüllten Daten neue Parameterwerte.
+\item Führe Schritte 2 und 3 bis zur Konvergenz aus.
+\end{enumerate}
+\end{block}
+
+
+
+\end{column}
+
+
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+%
+  
+\end{columns}  
+
+
+
+\begin{columns}[t]
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+% 10 
+
+
+\begin{column}{.3\linewidth}
+
+\begin{block}{(Simulations-) Ergebnisse \Pheight}
+So schreibt man \textbf{fett}.
+\end{block}
+
+\end{column}
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+% 11
+
+\begin{column}{.3\linewidth}
+
+\begin{block}{(Simulations-) Ergebnisse \Pheight}
+\textit{Kursiv} geht auch
+\end{block}
+
+\end{column}
+
+%
+%-------------------------------------------------------------------------------------------------------------
+% 12
+
+\begin{column}{.3\linewidth}
+
+
+  \begin{block}{ Fazit \Pheight}
+\begin{itemize}
+\item Erkennisse 
+\item Schlussfolgerungen
+\item Ausblick.
+\item 
+\end{itemize}
+   \end{block}
+
+\begin{tiny}
+ \begin{thebibliography}{sotief}
+
+    \bibitem{Muennich} Burgard, J.P.; M\"{u}nnich, R. (2010): Modelling over and undercounts for design-based Monte Carlo studies in small area estimation: An application to the German register-assisted census. Computational Statistics and Data Analysis.
+    
+    \bibitem{Muennichb} Gabler, S,; Ganninger,M.; M\"{u}nnich, R. (2010): Optimal allocation of the sample size to strata under box constraints. Metrika. 
+    
+    \bibitem{Gelman} Gelman, A.; (2007): Struggles with Survey Weighting and Regression Modeling. Statistical Science.
+    \bibitem{Alfons} Alfons, A.; Filzmoser, P.; Hulliger, B.,Kolb, J.P.; Kraft, S.; M\"{u}nnich, R. und Templ, M. (2011):  The AMELI simulation study. Research Project Report WP6 - D6.1, FP7-SSH-2007-217322 AMELI. 
+    \bibitem{Alfons} Alfons, A.; Filzmoser, P.; Hulliger, B., Kolb, J.-P.; Kraft, S.; M\"{u}nnich, R., und Templ, M. (2011): Synthetic data generation of SILC Data. Research Project Report WP6 - D6.2, FP7-SSH-2007-217322 AMELI. 
+    
+  \end{thebibliography}
+\end{tiny}
+
+
+
+\end{column}
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+%
+
+\end{columns}
+
+\end{frame}
+
+
+\end{document}
+

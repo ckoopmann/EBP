@@ -110,7 +110,7 @@ population$freq <- round(population$gewichtung)
 
 
 #No. Simulations
-s <- 10
+s <- 250
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene (habe den wieder eingstellt, sonst dauert es ewig)
 c <- 25000
