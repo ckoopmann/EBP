@@ -1,0 +1,14 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdftex 2016.1.11)  11 JAN 2016 00:23
+entering extended mode
+**C:/Users/Felix/Google*Drive/MonteCarlo/poster_vorlage/beamerthemeI6dv.sty
+("C:/Users/Felix/Google Drive/MonteCarlo/poster_vorlage/beamerthemeI6dv.sty"
+! Undefined control sequence.
+l.1 \ProvidesPackage
+                    {beamerthemeI6dv} % this style was created by David Vilar
+? 
+! Emergency stop.
+l.1 \ProvidesPackage
+                    {beamerthemeI6dv} % this style was created by David Vilar
+End of file on the terminal!
+
+!  ==> Fatal error occurred, no output PDF file produced!
