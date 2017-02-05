@@ -207,15 +207,15 @@ Parameters: $N=112644, s=250, \varepsilon \sim N(0,5000), g=2000, n=10000, c=250
 
 \begin{column}{.3\linewidth}
 
-\begin{block}{MSE of EBP and Gini Population Value per Domain \Pheight}
+\begin{block}{RMSE of weighted and unweighted EBP per Domain \Pheight}
 \begin{center}
 	\begin{figure}
-		\includegraphics[width=0.9\textwidth]{EBPWeightedMSE}
-		\caption{MSE of weighted EBP per Domain}
+		\includegraphics[width=0.9\textwidth]{EBPWeightedRMSE}
+		\caption{RMSE of Weighted EBP per Domain}
 	\end{figure}
 		\begin{figure}
-		\includegraphics[width=0.9\textwidth]{EBPWeightedPopulationValue}
-		\caption{Population Gini per Domain}
+		\includegraphics[width=0.9\textwidth]{EBPUnweightedRMSE}
+		\caption{RMSE of Unweighted EBP per Domain}
 	\end{figure}
 \end{center}
 
@@ -229,15 +229,15 @@ Parameters: $N=112644, s=250, \varepsilon \sim N(0,5000), g=2000, n=10000, c=250
 
 \begin{column}{.3\linewidth}
 
-\begin{block}{Domain Level MSE and MAE of Estimators \Pheight}
+\begin{block}{Domain Level MRE and RMSE of Estimators \Pheight}
 \begin{center}
 	\begin{figure}
-		\includegraphics[width=0.9\textwidth]{BPMAE}
-		\caption{Boxplot of MAE on Domain Level}
+		\includegraphics[width=0.9\textwidth]{BoxPlotMREByDomain}
+		\caption{Boxplot of Mean Relative Error on Domain Level}
 	\end{figure}
 		\begin{figure}
-		\includegraphics[width=0.9\textwidth]{BPMSE}
-		\caption{Boxplot of MSE on Domain Level}
+		\includegraphics[width=0.9\textwidth]{BoxPlotRMSEByDomain}
+		\caption{Boxplot of RMSE on Domain Level}
 	\end{figure}
 \end{center}
 \end{block}
@@ -254,7 +254,7 @@ Parameters: $N=112644, s=250, \varepsilon \sim N(0,5000), g=2000, n=10000, c=250
   \begin{block}{ Accuracy of inbuilt MSE estimator \Pheight}
 	\begin{center}
 	\begin{figure}
-		\includegraphics[width=0.9\textwidth]{HistMSE}
+		\includegraphics[width=0.9\textwidth]{HistogramMSEEstimate}
 		\caption{Histogram of Difference between EBP MSE estimator and the sample MSE across iterations}
 	\end{figure}
 \end{center}

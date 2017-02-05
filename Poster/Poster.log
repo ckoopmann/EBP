@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2014.4.16)  5 FEB 2017 14:25
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2014.4.16)  5 FEB 2017 16:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1557,16 +1557,6 @@ Dictionary: translator-theorem-dictionary, Language: English
 LaTeX Info: Redefining \includegraphics on input line 58.
 \c@lstlisting=\count195
  (./Poster.nav)
-
-Package pgf Warning: File "UniLogo" not found when defining image "UniLogo".
-(pgf)                Tried all extensions in ".pdf:.jpg:.jpeg:.png:" on input l
-ine 58.
-
-
-Package pgf Warning: Missing height for image "UniLogo" ("UniLogo") in draft mo
-de.
-(pgf)                Using 1cm instead on input line 58.
-
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <31.1> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 58.
 LaTeX Font Info:    Calculating math sizes for size <25.93> on input line 58.
@@ -1596,48 +1586,38 @@ LaTeX Font Info:    Font shape `T1/phv/m/it' in size <12.59995> not available
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <9> not available
 (Font)              Font shape `T1/phv/m/sl' tried instead on input line 260.
 
-<EBPWeightedMSE.png, id=13, 803.0pt x 401.5pt>
-File: EBPWeightedMSE.png Graphic file (type png)
- <use EBPWeightedMSE.png>
-Package pdftex.def Info: EBPWeightedMSE.png used on input line 260.
+<EBPWeightedRMSE.png, id=14, 803.0pt x 401.5pt>
+File: EBPWeightedRMSE.png Graphic file (type png)
+ <use EBPWeightedRMSE.png>
+Package pdftex.def Info: EBPWeightedRMSE.png used on input line 260.
 (pdftex.def)             Requested size: 629.6389pt x 314.84123pt.
 
-<EBPWeightedPopulationValue.png, id=15, 803.0pt x 401.5pt>
-File: EBPWeightedPopulationValue.png Graphic file (type png)
-
-<use EBPWeightedPopulationValue.png>
-Package pdftex.def Info: EBPWeightedPopulationValue.png used on input line 260.
-
+<EBPUnweightedRMSE.png, id=16, 803.0pt x 401.5pt>
+File: EBPUnweightedRMSE.png Graphic file (type png)
+ <use EBPUnweightedRMSE.png>
+Package pdftex.def Info: EBPUnweightedRMSE.png used on input line 260.
 (pdftex.def)             Requested size: 629.6389pt x 314.84123pt.
 
-<BPMAE.png, id=16, 2844.6275pt x 1422.31375pt>
-File: BPMAE.png Graphic file (type png)
- <use BPMAE.png>
-Package pdftex.def Info: BPMAE.png used on input line 260.
+<BoxPlotMREByDomain.png, id=17, 2844.6275pt x 1422.31375pt>
+File: BoxPlotMREByDomain.png Graphic file (type png)
+
+<use BoxPlotMREByDomain.png>
+Package pdftex.def Info: BoxPlotMREByDomain.png used on input line 260.
 (pdftex.def)             Requested size: 629.6389pt x 314.81984pt.
 
-<BPMSE.png, id=17, 2844.6275pt x 1422.31375pt>
-File: BPMSE.png Graphic file (type png)
- <use BPMSE.png>
-Package pdftex.def Info: BPMSE.png used on input line 260.
+<BoxPlotRMSEByDomain.png, id=18, 2844.6275pt x 1422.31375pt>
+File: BoxPlotRMSEByDomain.png Graphic file (type png)
+
+<use BoxPlotRMSEByDomain.png>
+Package pdftex.def Info: BoxPlotRMSEByDomain.png used on input line 260.
 (pdftex.def)             Requested size: 629.6389pt x 314.81984pt.
 
-<HistMSE.png, id=18, 2844.6275pt x 1422.31375pt>
-File: HistMSE.png Graphic file (type png)
- <use HistMSE.png>
-Package pdftex.def Info: HistMSE.png used on input line 260.
+<HistogramMSEEstimate.png, id=19, 2844.6275pt x 1422.31375pt>
+File: HistogramMSEEstimate.png Graphic file (type png)
+
+<use HistogramMSEEstimate.png>
+Package pdftex.def Info: HistogramMSEEstimate.png used on input line 260.
 (pdftex.def)             Requested size: 629.6389pt x 314.81984pt.
-
-
-Package pgf Warning: File "UniLogo" not found when defining image "UniLogo".
-(pgf)                Tried all extensions in ".pdf:.jpg:.jpeg:.png:" on input l
-ine 260.
-
-
-Package pgf Warning: Missing height for image "UniLogo" ("UniLogo") in draft mo
-de.
-(pgf)                Using 1cm instead on input line 260.
-
 
 Overfull \hbox (24.39783pt too wide) has occurred while \output is active
 [] 
@@ -1645,8 +1625,8 @@ Overfull \hbox (24.39783pt too wide) has occurred while \output is active
 
 [1{/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
- <./EBPWeightedMSE.png> <./EBPWeightedPopulationValue.png> <./BPMAE.png> <./BPM
-SE.png> <./HistMSE.png>]
+ <./EBPWeightedRMSE.png> <./EBPUnweightedRMSE.png> <./BoxPlotMREByDomain.png> <
+./BoxPlotRMSEByDomain.png> <./HistogramMSEEstimate.png> <./UniLogo.jpg>]
 \tf@nav=\write6
 \openout6 = `Poster.nav'.
 
@@ -1829,11 +1809,11 @@ translator-months-dictionary-English.dict
 translator-numbers-dictionary-English.dict    
 translator-theorem-dictionary-English.dict    
    t1pcr.fd    2001/06/04 font definitions for T1/pcr.
-EBPWeightedMSE.png    Graphic file (type png)
-EBPWeightedPopulationValue.png    Graphic file (type png)
-   BPMAE.png    Graphic file (type png)
-   BPMSE.png    Graphic file (type png)
- HistMSE.png    Graphic file (type png)
+EBPWeightedRMSE.png    Graphic file (type png)
+EBPUnweightedRMSE.png    Graphic file (type png)
+BoxPlotMREByDomain.png    Graphic file (type png)
+BoxPlotRMSEByDomain.png    Graphic file (type png)
+HistogramMSEEstimate.png    Graphic file (type png)
  ***********
 
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 263.
@@ -1842,11 +1822,11 @@ Package rerunfilecheck Info: File `Poster.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 263.
  ) 
 Here is how much of TeX's memory you used:
- 21165 strings out of 493315
- 385867 string characters out of 6137904
- 513625 words of memory out of 5000000
+ 21163 strings out of 493315
+ 386016 string characters out of 6137904
+ 514124 words of memory out of 5000000
  24049 multiletter control sequences out of 15000+600000
- 66796 words of font info for 87 fonts, out of 8000000 for 9000
+ 65642 words of font info for 86 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  49i,22n,66p,414b,1002s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
@@ -1858,10 +1838,10 @@ texlive/2013/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/
 2013/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2013/te
 xmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2013/texmf-dis
 t/fonts/type1/urw/helvetic/uhvro8a.pfb>
-Output written on Poster.pdf (1 page, 405796 bytes).
+Output written on Poster.pdf (1 page, 452667 bytes).
 PDF statistics:
- 67 PDF objects out of 1000 (max. 8388607)
+ 69 PDF objects out of 1000 (max. 8388607)
  39 compressed objects within 1 object stream
  3 named destinations out of 1000 (max. 500000)
- 68 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 78 words of extra memory for PDF output out of 10000 (max. 10000000)
 
