@@ -122,7 +122,7 @@ population$freq <- round(population$gewichtung)
 
 
 #No. Simulations
-s <- 2
+s <- 10
 
 #Größe des "Zensus" für die Daten auf Small Area-Ebene (habe den wieder eingstellt, sonst dauert es ewig)
 c <- 25000
@@ -271,8 +271,13 @@ for(i in 1:s) {
       # unwlong <- cbind(unwlong, ginitbl$Ungewichtet)
       # gewlong <- cbind(gewlong, ginitbl$gew)
       # mselong <- cbind(mselong, msetbl)
-  
-      
+      ginitbl$Simulation <- i
+      if(exists("EvaluationDataByRegion")){
+            EvaluationDataByRegion <- rbind(EvaluationDataByRegion,ginitbl)
+      }
+      else{
+            EvaluationDataByRegion <- ginitbl
+      } 
 }
 
 #Auswertung
