@@ -100,7 +100,7 @@ population$groupedincome <- factor(population$groupedincome, labels =c(1:5))
 
 #Gewichte werden berechnet - wieviele Personen repräsentiert eine Person pro Gruppe
 #Wir ziehen später gleichverteilt aus jeder Einkommensgruppe g Fälle -- ?? Stichprobengröße insgesamt ist 2000 oder?
-g <- 2000
+g <- 999
 
 #Es wird einmal gesamplet, um die Anzahl je SMA festzulegen
 sp_org <-split(population, population$groupedincome)
