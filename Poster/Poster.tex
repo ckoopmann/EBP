@@ -15,6 +15,7 @@
 \usepackage{fp}
 \usepackage{ifthen}
 \usepackage[T1]{fontenc}
+
 \usepackage{graphicx}
 \usepackage{tikz,colortbl,pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade,eurosym, dsfont}
 \listfiles
@@ -50,9 +51,9 @@
 \newcommand{\E}{\text{E}\,}
 \newcommand{\var}{\text{V}\,}
 
-\title{\huge Empirical Best Predictor}
+\title{\huge Performance of Empirical Best Predictor in Informative Samples - A Monte Carlo Simulation}
 \author{\large Felix Skarke, Enno Tammena, Christian Koopmann}
-\institute{Freie Universität Berlin} % (oder halt Berlin)
+\institute{Freie Universit{\"a}t Berlin, Humboldt Universit{\"a}t zu Berlin}
 
 \date{today}
 \begin{document}
@@ -66,10 +67,10 @@
 \begin{columns}[t] % Wechsel in die Spaltenumgebung
 
 \begin{column}{.3\linewidth} 
-\begin{block}{Erklärung Vorgehen  \Pheight}
-\begin{enumerate} % für Stichpunkte
+\begin{block}{Erklï¿½rung Vorgehen  \Pheight}
+\begin{enumerate} % fï¿½r Stichpunkte
 \item Das Thema ist besonders relevant, weil ...
-\item Außerdem ...
+\item Auï¿½erdem ...
 \item Weiterhin ...
 
 \end{enumerate}
@@ -82,7 +83,7 @@
 %
 
 \begin{column}{.3\linewidth}
-\begin{block}{Übersicht Genetic Matching Algorithmus\Pheight}
+\begin{block}{ï¿½bersicht Genetic Matching Algorithmus\Pheight}
 
 
 \end{block}
@@ -137,7 +138,7 @@ $$\int_{a}^{b} f(x)\, dx \approx (b-a)\frac{f(a) + f(b)}{2}$$
 
  \begin{block}{Umsetzung \Pheight}
 
-Hier wird das Vorgehen erklärt:
+Hier wird das Vorgehen erklï¿½rt:
 \begin{itemize}
 \item ...
 \item ...
@@ -158,20 +159,35 @@ Hier wird das Vorgehen erklärt:
 \begin{column}{.3\linewidth}
 
 
-\begin{block}{Umsetzung \Pheight}
-Ein Algorithmus zur Lösung des Problems:
-\begin{enumerate} % Für Aufzählungen
-\item Wähle Startwerte für die Parameter.
-\item Fülle die fehlenden Daten auf.
-\item Berechne über die aufgefüllten Daten neue Parameterwerte.
-\item Führe Schritte 2 und 3 bis zur Konvergenz aus.
+\begin{block}{Implementation \Pheight}
+\begin{itemize}
+\item Dataset: EUSILC Data as provided by the emdi package
+\item to achieve a sufficient population size $N$, randomly dublicate observations between 1 and 8 times
+\item add $\varepsilon$ to the dependent variable of duplicated observations
+\item take a random sample of $g$ observations from 5 income groups to get a sample of size $n$
+\item calculate $frequency weights = N_{SMA,income group}/n_{SMA}/5 $
+\item take random sample of $c$ observations for second level EBP data 
+ 
+\item for 1:s \{
+\begin{enumerate}  % Fï¿½r Aufzï¿½hlungen
+\item split population by SMA, take a sample of $n_{sma} / 5$ from each income group
+\item estimate $Gini_{direct}, Gini_{weighted}$
+\item estimate $Gini_{EBP}$  based on $l$ pseudo-populations
+\item estimate $MSE_{Gini_{EBP}}$ based on $b$ bootstraps
+\item expand the sample by frequency weights
+\item estimate $Gini_{weighted EBP}$  based on $l$ pseudo-populations
+\item save the results per SMA
 \end{enumerate}
+\}
+ 
+\item calculate quality measures per SMA 
+ \end{itemize}
+Parameters: $N=112644, s=250, \varepsilon \sim N(0,5000), g=2000, n=10000, c=25000, l=50, b=10, SMA=District$
 \end{block}
 
 
 
 \end{column}
-
 
 
 %
