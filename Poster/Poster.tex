@@ -73,7 +73,7 @@
 $\Rightarrow$ reasoning behind using small area methods like EBP (Empirical Best Predictor) approach \\
 \vskip .5cm
 \item When complex sampling designs are used to generate a sample (practical reasons, special interest in small subpopulation), not using sampling weights can lead to biased estimators \\
-$\Rightarrow$ use of direct estimators like weighted Gini
+$\Rightarrow$ use of direct estimators like weighted Gini\\
 $\Rightarrow$ In model-based inference normally the sampling design is assumed to be uninformative (like SRS):\\ $P(s|y)=P(s),\;\; \forall y\in \mathbb{R}^N,\; \forall s$
 \vskip .5cm
 \item Since sampling weights cannot be used directly in the EBP approach the question of this study is how to deal with a sample that has a complex sampling design and also might not have enough subjects in every domain of interest for a direct estimator to deliver good results
@@ -177,16 +177,20 @@ $\Rightarrow$ obtain an estimator of interest in each domain for every pseudo-po
    
 \begin{column}{.3\linewidth}
 
- \begin{block}{Umsetzung \Pheight}
-
-Hier wird das Vorgehen erkl�rt:
-\begin{itemize}
-\item ...
-\item ...
-\item ...
-\end{itemize}
+\begin{block}{MSE estimation \Pheight}
+Since analytical approximations of the MSE are difficult to derive in the case of nonlinear indicators as the FGT or the Gini the MSE will be approximated using a bootstrap procedure:
+\begin{enumerate}
+\item Fit the model to the sample data and therefore obtain estimates for $\beta, \sigma_{u}^2 and \sigma_{e}^2$
+\item Generate $u_{i}^*\sim iid \mathcal{N}(0,\hat{\sigma}_{u}^2)$ and $e_{ij}^*\sim iid \mathcal{N}(0,\hat{\sigma}_{e}^2)$ independently for every domain and every person in the population
+\item Construct a superpopulation using the generated error terms and the population covariates
+\[y_{ij}^*=x_{ij}\prime\hat{\beta}+u_{i}^*+e_{ij}^*\]
+\item Draw B bootstrap populations from the superpopulation and calculate $\theta_{i}^{*b}$ in every domain for each of the populations
+\item Draw a bootstrap sample from every population, implement the EBP and estimate $\hat{\theta}_{i}^{*b}$
+\item Finally estimate the MSE per domain by: 
+\[\hat{MSE}=\frac{1}{B}\sum_{b=1}^B (\hat{\theta}_{i}^{*b}-\theta_{i}^{*b})^2\]
+\end{enumerate}
 \end{block}
-\end{column}     
+\end{column}    
 
 
 
