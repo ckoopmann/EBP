@@ -17,6 +17,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage{tikz,colortbl,pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade,eurosym, dsfont}
+\usepackage{tcolorbox}
 \listfiles
 \newcommand*{\signstream}{SignStream\texttrademark\xspace}
 \newcommand{\WichtigFarbe}{\color{red}}%
@@ -66,24 +67,17 @@
 \begin{columns}[t] % Wechsel in die Spaltenumgebung
 
 \begin{column}{.3\linewidth} 
-\begin{block}{Erkl�rung Vorgehen  \Pheight}
-\begin{enumerate} % f�r Stichpunkte
-\item Das Thema ist besonders relevant, weil ...
-\item Au�erdem ...
-\item Weiterhin ...
-
-\end{enumerate}
-
-\end{block}
-\end{column}
-
-%
-%------------------------------------------------------ ------------------------------------------------------
-%
-
-\begin{column}{.3\linewidth}
-\begin{block}{�bersicht Genetic Matching Algorithmus\Pheight}
-
+\begin{block}{Idea of simulation study  \Pheight}
+\begin{itemize}
+\item Dealing with domains of interest, that do not have a sufficiently large sample size can lead to unsatisfactory results, when using direct estimators \\
+$\Rightarrow$ reasoning behind using small area methods like EBP (Empirical Best Predictor) approach \\
+\vskip .5cm
+\item When complex sampling designs are used to generate a sample (practical reasons, special interest in small subpopulation), not using sampling weights can lead to biased estimators \\
+$\Rightarrow$ use of direct estimators like weighted Gini
+$\Rightarrow$ In model-based inference normally the sampling design is assumed to be uninformative (like SRS):\\ $P(s|y)=P(s),\;\; \forall y\in \mathbb{R}^N,\; \forall s$
+\vskip .5cm
+\item Since sampling weights cannot be used directly in the EBP approach the question of this study is how to deal with a sample that has a complex sampling design and also might not have enough subjects in every domain of interest for a direct estimator to deliver good results
+\end{itemize}
 
 \end{block}
 \end{column}
@@ -93,8 +87,52 @@
 %
 
 \begin{column}{.3\linewidth}
- \begin{block}{Genetic Matching Theorie \Pheight}
+\begin{block}{The Gini: a meassure for inequality\Pheight}
+\begin{minipage}{0.5\textwidth}
+\begin{figure}[ht]
+\includegraphics[scale=1.5]{Lorenz.pdf}
+\end{figure}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+\begin{itemize}
+\item The Gini coefficient is used to meassure inequality of distribution (e.g. income, wealth) in a society
+\item It is defined as the area between the Lorenz curve and the 45° line (=A) in relation to the area beneath the 45° line (=A+B), where B is the area under the Lorenz curve  
+\end{itemize}
+\end{minipage}%
+\end{block}
+\vskip .5cm
+\centering
+\begin{tcolorbox}
+Therefore it can be expressed as:
+\begin{equation*}
+G=A/(A+B)=2A=1-2B
+\end{equation*}
+\end{tcolorbox}
+\end{column}
 
+%
+%------------------------------------------------------ ------------------------------------------------------
+%
+
+\begin{column}{.3\linewidth}
+ \begin{block}{The Gini: unweighted and weighted \Pheight}
+The Gini coefficient can be expressed without a direct reference to the Lorenz curve:\\
+\vskip 0.5cm
+\textbf{unweighted version}
+\begin{tcolorbox}
+\begin{equation*}
+\hat{G}={\frac {2\sum_{i=1}^{n}\;iy_{i}}{n\sum _{i=1}^{n}y_{i}}}-{\frac {n+1}{n}}
+\end{equation*}
+\end{tcolorbox}
+\vskip 0.5cm
+\textbf{weighted version}
+\begin{tcolorbox}
+\begin{equation*}
+\hat{G}=100\Bigg[{\frac {2\sum_{i=1}^{n}\;(w_{i}y_{i}\sum_{j=1}^{i}\;w_{j})-\sum_{i=1}^{n}\;w_{i}^{2}y_{i}}{(\sum_{i=1}^{n}\;w_{i})\sum_{i=1}^{n}\;(w_{i}y_{i})}-1}\Bigg]
+\end{equation*}
+\end{tcolorbox}
+\vskip 0.5cm
+{\fontencoding{U}\fontfamily{futs}\selectfont\char 66\relax} Using weights in direct estimators is important, if a complex sampling design is used. Not weighting the observations leads to (sometimes severely) biased estimates.
 \end{block}
 \end{column}
 
@@ -115,20 +153,24 @@
 
   
 \begin{column}{.3\linewidth}
-    
-    
-
-
-    \begin{block}{Theorie \Pheight}
-
-Formeln macht man so:
-$$\int_{a}^{b} f(x)\, dx \approx (b-a)\frac{f(a) + f(b)}{2}$$
-
+\begin{block}{Empirical Best Predictor \Pheight}
+\underline{random effects model}:\\
+\vskip 1.5cm
+\scalebox{1.2}{$y_{ij}=x_{ij}\prime\beta+u_{i}+e_{ij},\;\;\;j=1,\dots,n_{i},\;\;i=1,\dots,D$} \\
+\vskip 1.0cm
+,where $u_{i}\sim\mathcal{N}(0,\sigma_{u}^2)$ and $e_{ij}\sim\mathcal{N}(0,\sigma_{e}^2)$ \\
+\vskip 2cm
+\textbf{estimation of model}:
+\vskip .5cm
+\begin{enumerate}
+\item estimate $\hat{\beta},\hat{\sigma}_{u}^2,\hat{\sigma}_{e}^2,\hat{u}_{i},\hat{\gamma}_{i}=\frac{\hat{\sigma}_{u}^2}{\hat{\sigma}_{u}^2+\frac{\hat{\sigma}_{e}^2}{n_{i}}}$ from sample
+\item generate $e_{ij}^*\sim\mathcal{N}(0,\hat{\sigma}_{e}^2)$ and $u_{i}^*\sim\mathcal{N}(0,\hat{\sigma}_{u}^2(1-\hat{\gamma}_{i}))$ for L pseudo-populations: \[y_{ij}^{*(l)}=x_{ij}\prime\hat{\beta}+\hat{u}_{i}+u_{i}^*+e_{ij}^*\]\\
+$\Rightarrow$ obtain an estimator of interest in each domain for every pseudo-population
+\item calculate $\hat{\theta}_{i}^{EBP}=\frac{1}{L}\sum_{l=1}^{L}\hat{\theta}_{i}^{(l)}$ for each domain
+\end{enumerate}
 
 \end{block}
 \end{column}
-
-
 %
 %------------------------------------------------------ ------------------------------------------------------
 % Folie 5
