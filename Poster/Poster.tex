@@ -7,7 +7,7 @@
 %\usepackage{sfmath} % for sans serif math fonts; wget http://dtrx.de/od/tex/sfmath.sty
 \usepackage[english]{babel}
 \usepackage[ansinew]{inputenc}
-\usepackage[orientation=portrait,size=a0,scale=1.25,debug]{beamerposter}
+\usepackage[orientation=portrait,size=a0,scale=1,debug]{beamerposter}
 \usepackage{booktabs,array}
 \usepackage{listings}
 %\usepackage{picins,graphicx}
@@ -67,16 +67,18 @@
 \begin{columns}[t] % Wechsel in die Spaltenumgebung
 
 \begin{column}{.3\linewidth} 
-\begin{block}{Idea of simulation study  \Pheight}
+\begin{block}{Motivation  \Pheight}
 \begin{itemize}
-\item Dealing with domains of interest, that do not have a sufficiently large sample size can lead to unsatisfactory results, when using direct estimators \\
-$\Rightarrow$ reasoning behind using small area methods like EBP (Empirical Best Predictor) approach \\
+\item Use of direct estimators in domains of interest with insufficient sample size can lead to unreliable results  \\
+$\Rightarrow$ Using small area methods like EBP (Empirical Best Predictor) approach can be preferable \\
+\item  In model-based inference normally the sampling design is assumed to be uninformative (e.g. simple random sampling):\\ $P(s|y)=P(s),\;\; \forall y\in \mathbb{R}^N,\; \forall s$
 \vskip .5cm
-\item When complex sampling designs are used to generate a sample (practical reasons, special interest in small subpopulation), not using sampling weights can lead to biased estimators \\
+\item When complex designs are used for sampling (practical reasons, special interest in small subpopulation), ignoring weights can lead to biased estimators \\
 $\Rightarrow$ use of direct estimators like weighted Gini\\
-$\Rightarrow$ In model-based inference normally the sampling design is assumed to be uninformative (like SRS):\\ $P(s|y)=P(s),\;\; \forall y\in \mathbb{R}^N,\; \forall s$
+
 \vskip .5cm
-\item Since sampling weights cannot be used directly in the EBP approach the question of this study is how to deal with a sample that has a complex sampling design and also might not have enough subjects in every domain of interest for a direct estimator to deliver good results
+\item Problem: sampling weights cannot be used directly in the EBP approach because of non-linearity
+\item The aim of this study is to evaluate the performance of EBP relative to direct estimation under a complex sampling design
 \end{itemize}
 
 \end{block}
@@ -87,7 +89,7 @@ $\Rightarrow$ In model-based inference normally the sampling design is assumed t
 %
 
 \begin{column}{.3\linewidth}
-\begin{block}{The Gini: a meassure for inequality\Pheight}
+\begin{block}{The Gini: a measure for inequality\Pheight}
 \begin{minipage}{0.5\textwidth}
 \begin{figure}[ht]
 \includegraphics[scale=1.5]{Lorenz.pdf}
@@ -95,8 +97,8 @@ $\Rightarrow$ In model-based inference normally the sampling design is assumed t
 \end{minipage}%
 \begin{minipage}{.5\textwidth}
 \begin{itemize}
-\item The Gini coefficient is used to meassure inequality of distribution (e.g. income, wealth) in a society
-\item It is defined as the area between the Lorenz curve and the 45° line (=A) in relation to the area beneath the 45° line (=A+B), where B is the area under the Lorenz curve  
+\item The Gini coefficient is used to measure inequality of distribution (e.g. income, wealth) in a society
+\item It is defined as the area between the Lorenz curve and the $45^{\circ}$ line (=A) in relation to the area beneath the $45^{\circ}$  line (=A+B), where B is the area under the Lorenz curve  
 \end{itemize}
 \end{minipage}%
 \end{block}
@@ -132,7 +134,7 @@ The Gini coefficient can be expressed without a direct reference to the Lorenz c
 \end{equation*}
 \end{tcolorbox}
 \vskip 0.5cm
-{\fontencoding{U}\fontfamily{futs}\selectfont\char 66\relax} Using weights in direct estimators is important, if a complex sampling design is used. Not weighting the observations leads to (sometimes severely) biased estimates.
+{\fontencoding{U}\fontfamily{futs}\selectfont\char 66\relax} Using weights in direct estimators can be important, if a complex sampling design is used. 
 \end{block}
 \end{column}
 
@@ -154,13 +156,13 @@ The Gini coefficient can be expressed without a direct reference to the Lorenz c
   
 \begin{column}{.3\linewidth}
 \begin{block}{Empirical Best Predictor \Pheight}
-\underline{random effects model}:\\
+\underline{Random Effects model}:\\
 \vskip 1.5cm
 \scalebox{1.2}{$y_{ij}=x_{ij}\prime\beta+u_{i}+e_{ij},\;\;\;j=1,\dots,n_{i},\;\;i=1,\dots,D$} \\
 \vskip 1.0cm
 ,where $u_{i}\sim\mathcal{N}(0,\sigma_{u}^2)$ and $e_{ij}\sim\mathcal{N}(0,\sigma_{e}^2)$ \\
 \vskip 2cm
-\textbf{estimation of model}:
+\textbf{Estimation of model}:
 \vskip .5cm
 \begin{enumerate}
 \item estimate $\hat{\beta},\hat{\sigma}_{u}^2,\hat{\sigma}_{e}^2,\hat{u}_{i},\hat{\gamma}_{i}=\frac{\hat{\sigma}_{u}^2}{\hat{\sigma}_{u}^2+\frac{\hat{\sigma}_{e}^2}{n_{i}}}$ from sample
@@ -178,10 +180,10 @@ $\Rightarrow$ obtain an estimator of interest in each domain for every pseudo-po
 \begin{column}{.3\linewidth}
 
 \begin{block}{MSE estimation \Pheight}
-Since analytical approximations of the MSE are difficult to derive in the case of nonlinear indicators as the FGT or the Gini the MSE will be approximated using a bootstrap procedure:
+Since analytical approximations of the MSE are difficult to derive in the case of nonlinear indicators like the Gini the MSE is approximated using a bootstrap procedure:
 \begin{enumerate}
 \item Fit the model to the sample data and therefore obtain estimates for $\beta, \sigma_{u}^2 and \sigma_{e}^2$
-\item Generate $u_{i}^*\sim iid \mathcal{N}(0,\hat{\sigma}_{u}^2)$ and $e_{ij}^*\sim iid \mathcal{N}(0,\hat{\sigma}_{e}^2)$ independently for every domain and every person in the population
+\item Generate $u_{i}^*\sim iid \mathcal{N}(0,\hat{\sigma}_{u}^2)$ and  $e_{ij}^*\sim iid \mathcal{N}(0,\hat{\sigma}_{e}^2)$ independently for every domain and every person in the population
 \item Construct a superpopulation using the generated error terms and the population covariates
 \[y_{ij}^*=x_{ij}\prime\hat{\beta}+u_{i}^*+e_{ij}^*\]
 \item Draw B bootstrap populations from the superpopulation and calculate $\theta_{i}^{*b}$ in every domain for each of the populations
@@ -203,37 +205,37 @@ Since analytical approximations of the MSE are difficult to derive in the case o
 
 \begin{column}{.3\linewidth}
 
+ \begin{block}{Data and Sampling \Pheight}
 
-\begin{block}{Implementation \Pheight}
+Assume the following scenario: 
+\begin{enumerate}
+\item Stratified sample ($i$ income groups nested in SMAs) with data on y and X
 \begin{itemize}
-\item Dataset: EUSILC Data as provided by the emdi package
-\item to achieve a sufficient population size $N$, randomly dublicate observations between 1 and 8 times
-\item add $\varepsilon$ to the dependent variable of duplicated observations
-\item take a random sample of $g$ observations from 5 income groups to get a sample of size $n$
-\item calculate $frequency weights = N_{SMA,income group}/n_{SMA}/5 $
-\item take random sample of $c$ observations for second level EBP data 
- 
-\item for 1:s \{
-\begin{enumerate}  % F�r Aufz�hlungen
-\item split population by SMA, take a sample of $n_{sma} / 5$ from each income group
-\item estimate $Gini_{direct}, Gini_{weighted}$
-\item estimate $Gini_{EBP}$  based on $l$ pseudo-populations
-\item estimate $MSE_{Gini_{EBP}}$ based on $b$ bootstraps
-\item expand the sample by frequency weights
-\item estimate $Gini_{weighted EBP}$  based on $l$ pseudo-populations
-\item save the results per SMA
+\item In each SMA, an equal number of observations per income group is sampled such that:
+\begin{itemize}
+\item Sample size $n_{SMA}$ per SMA is proportional to  $N_{SMA}$ 
+\item Smaller income groups are oversampled
+\end{itemize}
+\item Weights differ between income groups and SMAs
+$\rightarrow frequency weights_{SMA, income group} = {\frac {N_{SMA,income group}} {n_{SMA}/i}} $
+\end{itemize}
+\item Population data on X on SMA level is available
+
+
+\begin{itemize}
+\item approach is generalizable to other forms of sampling, where certain groups are over- or undersampled in a stratified setting
+\end{itemize} 
+
+ \item Dataset: EUSILC Data as provided by the emdi package
+\begin{itemize}
+
+\item to achieve a sufficient population size $N$, randomly duplicate observations between 1 and 8 times
+\item add $\varepsilon$ to the dependent variable of duplicated observations, where  $\varepsilon \sim N(0,5000)$
+\end{itemize} 
 \end{enumerate}
-\}
- 
-\item calculate quality measures per SMA 
- \end{itemize}
-Parameters: $N=112644, s=250, \varepsilon \sim N(0,5000), g=2000, n=10000, c=25000, l=50, b=10, SMA=District$
+
 \end{block}
-
-
-
- 
-\end{column}
+\end{column} 
 
 
 
@@ -249,12 +251,56 @@ Parameters: $N=112644, s=250, \varepsilon \sim N(0,5000), g=2000, n=10000, c=250
 
 %
 %------------------------------------------------------ ------------------------------------------------------
+% Folie 6 
+
+  % 
+
+
+\begin{column}{.3\linewidth}
+
+
+\begin{block}{Implementation \Pheight}
+\begin{itemize}
+
+\item take an initial random sample of size $n$ with same number ($g$) of observations from each income group 
+\item calculate $n_{SMA}$
+\item calculate $frequency weights$
+ 
+\item for 1:s \{
+\begin{enumerate}  % F�r Aufz�hlungen
+\item split population by SMA, take a sample of $n_{SMA} / 5$ from each income group
+\item estimate $\widehat{Gini}_{direct\_unweighted}, \widehat{Gini}_{direct\_weighted}$ per SMA
+\item estimate $\widehat{Gini}_{EBP\_unweighted}$  based on $l$ pseudo-populations per SMA
+\item estimate $\widehat{MSE}_{Gini_{unweighted\_EBP}}$ based on $b$ bootstraps per SMA
+\item expand the sample by frequency weights
+\item estimate $\widehat{Gini}_{EBP\_weighted}$  based on $l$ pseudo-populations per SMA
+\item save the results per SMA
+\end{enumerate}
+\}
+calculate $Gini_{SMA}$ based on population
+ 
+\item calculate quality measures per SMA
+	\begin{itemize}
+		\item $MSE_{SMA} = \sum_{i = 1}^{s} (\widehat{Gini}_{SMA} - Gini_{SMA})^2$
+		\item $RelBias_{SMA} = \sum_{i = 1}^{s} (\widehat{Gini}_{SMA} - Gini_{SMA})/Gini_{SMA}$
+	\end{itemize}
+\item Parameters: $N=112644, s=250, g=2000, n=10000, l=50, b=10, SMA=district, i=5$
+\end{itemize}
+\end{block}
+
+
+
+ 
+\end{column}
+
+%
+%------------------------------------------------------ ------------------------------------------------------
 % 10 
 
 
 \begin{column}{.3\linewidth}
 
-\begin{block}{RMSE of weighted and unweighted EBP per Domain \Pheight}
+\begin{block}{RMSE of weighted and unweighted EBP\Pheight}
 \begin{center}
 	\begin{figure}
 		\includegraphics[width=0.9\textwidth]{EBPWeightedRMSE}
@@ -280,7 +326,7 @@ Parameters: $N=112644, s=250, \varepsilon \sim N(0,5000), g=2000, n=10000, c=250
 \begin{center}
 	\begin{figure}
 		\includegraphics[width=0.9\textwidth]{BoxPlotMREByDomain}
-		\caption{Boxplot of Mean Relative Error on Domain Level}
+		\caption{Boxplot of Relative Bias on Domain Level}
 	\end{figure}
 		\begin{figure}
 		\includegraphics[width=0.9\textwidth]{BoxPlotRMSEByDomain}
@@ -290,7 +336,9 @@ Parameters: $N=112644, s=250, \varepsilon \sim N(0,5000), g=2000, n=10000, c=250
 \end{block}
 
 \end{column}
+\end{columns}
 
+\begin{columns}[t]
 %
 %-------------------------------------------------------------------------------------------------------------
 % 12
@@ -304,21 +352,39 @@ Parameters: $N=112644, s=250, \varepsilon \sim N(0,5000), g=2000, n=10000, c=250
 		\includegraphics[width=0.9\textwidth]{HistogramMSEEstimate}
 		\caption{Histogram of Difference between EBP MSE estimator and the sample MSE across iterations}
 	\end{figure}
-\end{center}
-   \end{block}
-\textbf{Observations:}
-\begin{itemize}
+	\end{center}
+	\textbf{Observations:}
+	\begin{itemize}
 	\item Bootstrap estimator agrees quite well with sample MSE
 	\item Slightly more likely to underestimate sample MSE
-\end{itemize}
-
+	\end{itemize}
+   \end{block}
 \end{column}
 
 %
 %------------------------------------------------------ ------------------------------------------------------
 %
 
+\begin{column}{.3\linewidth}
+\begin{block}{Conclusions \Pheight}
+\textbf{Conclusions:}
+\begin{itemize}
+	\item Unweighted direct estimator and EBP are both biased unlike their weighted versions.
+	\item Weighting substantially increase accuracy for both estimators.
+	\item Relative accuracy advantage of EBP over direct estimation is much larger in the unweighted case.
+	\item Weights  can be included in EBP estimation  by expanding the sample using frequency weights.
+\end{itemize}
+\textbf{Future Research:}
+\begin{itemize}
+	\item Explore alternative ways of including weights into EBP estimation.
+	\item Analyse alternative sampling designs.
+\end{itemize}
+\end{block}
+\end{column}
+
+
 \end{columns}
+
 
 \end{frame}
 

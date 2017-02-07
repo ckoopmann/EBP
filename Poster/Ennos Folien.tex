@@ -1,0 +1,83 @@
+%------------------------------------------------------ ------------------------------------------------------
+% Folie 5
+   
+\begin{column}{.3\linewidth}
+
+ \begin{block}{Data and Sampling \Pheight}
+
+Assume the following scenario: 
+\begin{enumerate}
+\item Stratified sample ($i$ income groups nested in SMA) with data on y and x'
+\begin{itemize}
+\item In each SMA, an equal number of observations per income group is sampled such that:
+\begin{itemize}
+\item Sample size $n_{SMA}$ per SMA is proportional to  $N_{SMA}$ 
+\item Smaller income groups are oversampled
+\end{itemize}
+\item Weights differ between income groups and SMAs
+$\rightarrow frequency weights_{SMA, income group} = {\frac {N_{SMA,income group}} {n_{SMA}/i}} $
+\end{itemize}
+\item Random sample with data on x' on SMA level
+
+\end{enumerate}
+
+\begin{itemize}
+\item approach is generalizable to other forms of sampling, where certain groups are over- or undersampled in a stratified setting
+\end{itemize} 
+
+ Dataset: EUSILC Data as provided by the emdi package
+\begin{itemize}
+
+\item to achieve a sufficient population size $N$, randomly dublicate observations between 1 and 8 times
+\item add $\varepsilon$ to the dependent variable of duplicated observations, where  $\varepsilon \sim N(0,5000)$
+\end{itemize} 
+
+\end{block}
+\end{column}     
+
+
+
+%
+%------------------------------------------------------ ------------------------------------------------------
+% Folie 6 
+
+  % 
+
+
+\begin{column}{.3\linewidth}
+
+
+\begin{block}{Implementation \Pheight}
+\begin{itemize}
+
+\item to achieve a fixed $n_{SMA}$, take an initial random sample from the population with $g$ observations from 5 income groups to get a sample of size $n$  
+\item calculate $n_{SMA}$
+\item calculate $frequency weights$
+\item take random sample of $c$ observations for second level EBP data 
+ 
+\item for 1:s \{
+\begin{enumerate}  % F�r Aufz�hlungen
+\item split population by SMA, take a sample of $n_{SMA} / 5$ from each income group
+\item estimate $Gini_{direct}, Gini_{weighted}$ per SMA
+\item estimate $Gini_{EBP}$  based on $l$ pseudo-populations per SMA
+\item estimate $MSE_{Gini_{EBP}}$ based on $b$ bootstraps per SMA
+\item expand the sample by frequency weights
+\item estimate $Gini_{weighted EBP}$  based on $l$ pseudo-populations per SMA
+\item save the results per SMA
+\end{enumerate}
+\}
+ 
+\item calculate quality measures per SMA 
+ \end{itemize}
+Parameters: $N=112644, s=250, g=2000, n=10000, c=25000, l=50, b=10, SMA=district, i=5$
+\end{block}
+
+
+
+ 
+\end{column}
+
+
+
+%
+%------------------------------------------------------ ------------------------------------------------------
