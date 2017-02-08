@@ -71,13 +71,15 @@
 \begin{itemize}
 \item Use of direct estimators in domains of interest with insufficient sample size can lead to unreliable results  \\
 $\Rightarrow$ Using small area methods like EBP (Empirical Best Predictor) approach can be preferable \\
+\vskip .5cm
 \item  In model-based inference normally the sampling design is assumed to be uninformative (e.g. simple random sampling):\\ $P(s|y)=P(s),\;\; \forall y\in \mathbb{R}^N,\; \forall s$
 \vskip .5cm
 \item When complex designs are used for sampling (practical reasons, special interest in small subpopulation), ignoring weights can lead to biased estimators \\
-$\Rightarrow$ use of direct estimators like weighted Gini\\
+$\Rightarrow$ Use of direct estimators like weighted Gini\\
 
 \vskip .5cm
-\item Problem: sampling weights cannot be used directly in the EBP approach because of non-linearity
+\item Problem: sampling weights cannot be used directly in the EBP approach because of non-linearity of indicator
+\vskip .5cm
 \item The aim of this study is to evaluate the performance of EBP relative to direct estimation under a complex sampling design
 \end{itemize}
 
@@ -123,14 +125,14 @@ The Gini coefficient can be expressed without a direct reference to the Lorenz c
 \textbf{unweighted version}
 \begin{tcolorbox}
 \begin{equation*}
-\hat{G}={\frac {2\sum_{i=1}^{n}\;iy_{i}}{n\sum _{i=1}^{n}y_{i}}}-{\frac {n+1}{n}}
+\hat{G}={\frac {2\sum_{j=1}^{n}\;jy_{j}}{n\sum _{j=1}^{n}y_{j}}}-{\frac {n+1}{n}}
 \end{equation*}
 \end{tcolorbox}
 \vskip 0.5cm
 \textbf{weighted version}
 \begin{tcolorbox}
 \begin{equation*}
-\hat{G}=100\Bigg[{\frac {2\sum_{i=1}^{n}\;(w_{i}y_{i}\sum_{j=1}^{i}\;w_{j})-\sum_{i=1}^{n}\;w_{i}^{2}y_{i}}{(\sum_{i=1}^{n}\;w_{i})\sum_{i=1}^{n}\;(w_{i}y_{i})}-1}\Bigg]
+\hat{G}=100\Bigg[{\frac {2\sum_{j=1}^{n}\;(w_{j}y_{j}\sum_{l=1}^{j}\;w_{l})-\sum_{j=1}^{n}\;w_{j}^{2}y_{j}}{(\sum_{j=1}^{n}\;w_{j})\sum_{j=1}^{n}\;(w_{j}y_{j})}-1}\Bigg]
 \end{equation*}
 \end{tcolorbox}
 \vskip 0.5cm
@@ -160,14 +162,14 @@ The Gini coefficient can be expressed without a direct reference to the Lorenz c
 \vskip 1.5cm
 \scalebox{1.2}{$y_{ij}=x_{ij}\prime\beta+u_{i}+e_{ij},\;\;\;j=1,\dots,n_{i},\;\;i=1,\dots,D$} \\
 \vskip 1.0cm
-,where $u_{i}\sim\mathcal{N}(0,\sigma_{u}^2)$ and $e_{ij}\sim\mathcal{N}(0,\sigma_{e}^2)$ \\
+,where $u_{i}\sim iid\mathcal{N}(0,\sigma_{u}^2)$ and $e_{ij}\sim iid\mathcal{N}(0,\sigma_{e}^2)$ \\
 \vskip 2cm
 \textbf{Estimation of model}:
 \vskip .5cm
 \begin{enumerate}
 \item estimate $\hat{\beta},\hat{\sigma}_{u}^2,\hat{\sigma}_{e}^2,\hat{u}_{i},\hat{\gamma}_{i}=\frac{\hat{\sigma}_{u}^2}{\hat{\sigma}_{u}^2+\frac{\hat{\sigma}_{e}^2}{n_{i}}}$ from sample
 \item generate $e_{ij}^*\sim\mathcal{N}(0,\hat{\sigma}_{e}^2)$ and $u_{i}^*\sim\mathcal{N}(0,\hat{\sigma}_{u}^2(1-\hat{\gamma}_{i}))$ for L pseudo-populations: \[y_{ij}^{*(l)}=x_{ij}\prime\hat{\beta}+\hat{u}_{i}+u_{i}^*+e_{ij}^*\]\\
-$\Rightarrow$ obtain an estimator of interest in each domain for every pseudo-population
+$\Rightarrow$ obtain an indicator of interest in each domain for every pseudo-population
 \item calculate $\hat{\theta}_{i}^{EBP}=\frac{1}{L}\sum_{l=1}^{L}\hat{\theta}_{i}^{(l)}$ for each domain
 \end{enumerate}
 
@@ -180,7 +182,7 @@ $\Rightarrow$ obtain an estimator of interest in each domain for every pseudo-po
 \begin{column}{.3\linewidth}
 
 \begin{block}{MSE estimation \Pheight}
-Since analytical approximations of the MSE are difficult to derive in the case of nonlinear indicators like the Gini the MSE is approximated using a bootstrap procedure:
+Since analytical approximations of the MSE are difficult or even impossible to derive in the case of nonlinear indicators like the Gini. The MSE is approximated using a bootstrap procedure:
 \begin{enumerate}
 \item Fit the model to the sample data and therefore obtain estimates for $\beta, \sigma_{u}^2 and \sigma_{e}^2$
 \item Generate $u_{i}^*\sim iid \mathcal{N}(0,\hat{\sigma}_{u}^2)$ and  $e_{ij}^*\sim iid \mathcal{N}(0,\hat{\sigma}_{e}^2)$ independently for every domain and every person in the population
@@ -189,7 +191,7 @@ Since analytical approximations of the MSE are difficult to derive in the case o
 \item Draw B bootstrap populations from the superpopulation and calculate $\theta_{i}^{*b}$ in every domain for each of the populations
 \item Draw a bootstrap sample from every population, implement the EBP and estimate $\hat{\theta}_{i}^{*b}$
 \item Finally estimate the MSE per domain by: 
-\[\hat{MSE}=\frac{1}{B}\sum_{b=1}^B (\hat{\theta}_{i}^{*b}-\theta_{i}^{*b})^2\]
+\[\hat{MSE}(\hat{\theta}_{i})=\frac{1}{B}\sum_{b=1}^B (\hat{\theta}_{i}^{*b}-\theta_{i}^{*b})^2\]
 \end{enumerate}
 \end{block}
 \end{column}    
@@ -381,7 +383,21 @@ calculate $Gini_{SMA}$ based on population
 \end{itemize}
 \end{block}
 \end{column}
+%
+%----------------------------------------------------------
+%
+\begin{column}{.3\linewidth}
+\begin{block}{Bibliography \Pheight}
+\begin{thebibliography}{9}
+\bibitem {A} Alfons, A., and Templ, M. (2013) Estimation of Social Exclusion Indicators from Complex Surveys: The R Package laeken. Journal of Statistical Software, 54, 1-25. 
+\bibitem {G} Guadarrama, M., Molina, I., and Rao, J.N.K. (2016) Small area estimation of general parameters under complex sampling designs. UC3M Working Papers, Statistics and Econometrics, 16-05.
+\bibitem {M} Molina, I., and Rao, J.N.K. (2010) Small area estimation of poverty indicators. Canandian Journal of Statistic, 38, 369-385.
+\bibitem {V} Verret, F., Rao, J.N.K, and Hidiroglou, M.A. (2015) Model-based small area estimation under informative sampling. Survey Methodology, 41.2, 333-347.
+\end{thebibliography}
 
+
+\end{block}
+\end{column}
 
 \end{columns}
 
